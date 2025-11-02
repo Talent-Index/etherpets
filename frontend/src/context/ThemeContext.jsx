@@ -90,6 +90,7 @@ export const ThemeProvider = ({ children }) => {
   const value = {
     theme,
     isDark,
+    setTheme,
   }
 
   return (

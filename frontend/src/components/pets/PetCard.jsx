@@ -2,20 +2,18 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import PetAvatar from './PetAvatar'
 import MoodIndicator from './MoodIndicator'
+import { useUser } from '../../context/UserContext'
 import { Heart, Zap, Utensils, Moon } from 'lucide-react'
 
 const PetCard = ({ pet }) => {
+  const { performPetAction } = useUser()
+
   const actions = [
     { icon: <Utensils className="w-5 h-5" />, label: 'Feed', type: 'feed' },
     { icon: <Heart className="w-5 h-5" />, label: 'Play', type: 'play' },
     { icon: <Moon className="w-5 h-5" />, label: 'Rest', type: 'rest' },
     { icon: <Zap className="w-5 h-5" />, label: 'Meditate', type: 'meditate' }
   ]
-
-  const handleAction = (actionType) => {
-    console.log(`Performing action: ${actionType} for pet ${pet.name}`)
-    // Will integrate with backend later
-  }
 
   return (
     <motion.div
@@ -58,7 +56,7 @@ const PetCard = ({ pet }) => {
             key={action.type}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => handleAction(action.type)}
+            onClick={() => performPetAction(pet.id, action.type)}
             className="bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl p-4 transition-all duration-300 flex flex-col items-center space-y-2"
           >
             <div className="text-accent-mint">

@@ -159,8 +159,8 @@ export class BlockchainService {
 
   /**
    * Simulate minting a pet NFT (for demo purposes)
-   * In production, this would interact with actual smart contracts
    * @param {Object} petData - Pet data to mint
+   * @note In production, this would interact with the EtherPets smart contract.
    * @returns {Promise<Object>} Transaction result
    */
   async mintPet(petData) {
@@ -187,6 +187,7 @@ export class BlockchainService {
   /**
    * Simulate updating pet mood on-chain
    * @param {string} petId - Pet NFT token ID
+   * @note In production, this would be a call to a specific function on the smart contract.
    * @param {string} mood - New mood value
    * @returns {Promise<Object>} Transaction result
    */
@@ -214,6 +215,7 @@ export class BlockchainService {
    * @param {string} to - Recipient address
    * @param {string} amount - Amount to transfer
    * @param {string} token - Token symbol (HMY for Harmony)
+   * @note In production, this would interact with an ERC20 token contract.
    * @returns {Promise<Object>} Transaction result
    */
   async transferTokens(to, amount, token = 'HMY') {

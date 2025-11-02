@@ -15,19 +15,19 @@ import {
   User
 } from 'lucide-react'
 import { useUser } from '../context/UserContext'
+import { useTheme } from '../context/ThemeContext'
 import { useWallet } from '../context/WalletContext'
 
 const Settings = () => {
   const { user, currentPet } = useUser()
   const { account, disconnectWallet } = useWallet()
+  const { theme, setTheme } = useTheme()
   
   // Settings state
   const [settings, setSettings] = useState({
-    sound: true,
-    notifications: true,
-    darkMode: true,
-    autoSave: true,
-    reduceMotion: false
+    sound: JSON.parse(localStorage.getItem('settings-sound') || 'true'),
+    notifications: JSON.parse(localStorage.getItem('settings-notifications') || 'true'),
+    reduceMotion: JSON.parse(localStorage.getItem('settings-reduceMotion') || 'false')
   })
 
   /**
@@ -41,8 +41,8 @@ const Settings = () => {
       [key]: value
     }))
     
-    // In a real app, you would save to localStorage or backend here
-    console.log(`Setting ${key} changed to:`, value)
+    // Save to localStorage
+    localStorage.setItem(`settings-${key}`, JSON.stringify(value))
   }
 
   /**
@@ -104,10 +104,10 @@ const Settings = () => {
         },
         {
           key: 'darkMode',
-          label: 'Dark Mode',
-          description: 'Use dark theme throughout the application',
+          label: 'Theme',
+          description: 'Switch between light, dark, and auto modes',
           icon: <Moon className="w-5 h-5" />,
-          type: 'toggle'
+          type: 'select'
         },
         {
           key: 'reduceMotion',
@@ -212,16 +212,31 @@ const Settings = () => {
 
                     {/* Toggle Setting */}
                     {setting.type === 'toggle' && (
-                      <label className="relative inline-flex items-center cursor-pointer">
+                      <label htmlFor={setting.key} className="relative inline-flex items-center cursor-pointer">
                         <input
+                          id={setting.key}
                           type="checkbox"
                           checked={settings[setting.key]}
                           onChange={(e) => handleSettingChange(setting.key, e.target.checked)}
                           className="sr-only peer"
                         />
-                        <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-teal"></div>
+                        <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-teal"></div>
                       </label>
                     )}
+
+                    {/* Select Setting */}
+                    {setting.type === 'select' && setting.key === 'darkMode' && (
+                      <select
+                        value={theme}
+                        onChange={(e) => setTheme(e.target.value)}
+                        className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-accent-teal"
+                      >
+                        <option value="dark">Dark</option>
+                        <option value="light">Light</option>
+                        <option value="auto">Auto</option>
+                      </select>
+                    )}
+
 
                     {/* Action Setting */}
                     {setting.type === 'action' && (

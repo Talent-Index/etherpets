@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Star, Zap, Heart, Award } from 'lucide-react'
+import { Star, Zap, Heart, Award, CheckCircle, Circle } from 'lucide-react'
 
 const PetEvolution = ({ pet, experience }) => {
   const currentLevel = pet?.level || 1
@@ -108,18 +108,5 @@ const PetEvolution = ({ pet, experience }) => {
     </motion.div>
   )
 }
-
-// We need to create a CheckCircle and Circle icon component if not available
-const CheckCircle = ({ className }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 20 20">
-    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-  </svg>
-)
-
-const Circle = ({ className }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 20 20">
-    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
-  </svg>
-)
 
 export default PetEvolution

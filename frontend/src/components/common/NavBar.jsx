@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useWallet } from '../../context/WalletContext'
-import { useUser } from '../../context/UserContext'
+import { useWallet } from '../context/WalletContext'
+import { useUser } from '../context/UserContext'
 import { 
   Home, 
   LayoutDashboard, 
@@ -13,10 +13,12 @@ import {
   Wallet,
   LogOut,
   Menu,
-  X
+  X,
+  Settings
 } from 'lucide-react'
+import NotificationCenter from './NotificationCenter'
 
-const NavBar = () => {
+const NavBar = ({ onCreatePet }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { account, isConnected, connectWallet, disconnectWallet } = useWallet()
   const { currentPet } = useUser()
@@ -29,12 +31,13 @@ const NavBar = () => {
     { name: 'Reflect', href: '/reflect', icon: Notebook },
     { name: 'Inventory', href: '/inventory', icon: Package },
     { name: 'Profile', href: '/profile', icon: User },
+    { name: 'Settings', href: '/settings', icon: Settings },
   ]
 
   const shortenedAddress = account ? `${account.slice(0, 6)}...${account.slice(-4)}` : ''
 
   return (
-    <nav className="glass-morphism border-b border-white/10">
+    <nav className="glass-morphism border-b border-white/10 sticky top-0 z-30">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -70,6 +73,9 @@ const NavBar = () => {
 
           {/* Wallet & User Info */}
           <div className="hidden md:flex items-center space-x-4">
+            {/* Notification Center */}
+            <NotificationCenter />
+
             {currentPet && (
               <div className="flex items-center space-x-3 bg-white/5 rounded-xl px-4 py-2">
                 <div className="w-8 h-8 bg-gradient-to-br from-accent-cyan to-accent-teal rounded-full flex items-center justify-center">

@@ -1,7 +1,3 @@
-/**
- * Blockchain Service for Ethereum/Avalanche interactions
- * Handles wallet connections, contract interactions, and network management
- */
 import { ethers } from 'ethers'
 
 // Avalanche Fuji Testnet configuration
@@ -31,10 +27,14 @@ const AVALANCHE_MAINNET = {
 }
 
 /**
- * Blockchain Service Class
- * Provides methods for wallet interaction and smart contract calls
+ * Provides a comprehensive service for interacting with the blockchain.
+ * This class abstracts away the complexities of wallet connections, network switching,
+ * and smart contract interactions using ethers.js.
  */
 export class BlockchainService {
+  /**
+   * Initializes the BlockchainService with null provider, signer, and other properties.
+   */
   constructor() {
     this.provider = null
     this.signer = null
@@ -43,9 +43,10 @@ export class BlockchainService {
   }
 
   /**
-   * Connect to user's wallet (MetaMask)
-   * @returns {Promise<string>} Connected account address
-   * @throws {Error} If MetaMask is not installed or connection fails
+   * Connects to the user's Ethereum wallet (e.g., MetaMask).
+   * It requests account access, sets up the provider and signer, and ensures the correct network is selected.
+   * @returns {Promise<string>} The connected wallet address.
+   * @throws {Error} If MetaMask is not installed, the user denies connection, or no accounts are found.
    */
   async connectWallet() {
     if (!window.ethereum) {
@@ -80,8 +81,9 @@ export class BlockchainService {
   }
 
   /**
-   * Switch to Avalanche Fuji Testnet
-   * @throws {Error} If network switch fails
+   * Switches the user's wallet to the Avalanche Fuji Testnet.
+   * If the network is not already added to the wallet, it prompts the user to add it.
+   * @throws {Error} If the network switch or addition fails.
    */
   async switchToAvalanche() {
     try {
@@ -109,8 +111,8 @@ export class BlockchainService {
   }
 
   /**
-   * Get current connected account
-   * @returns {Promise<string|null>} Current account address or null
+   * Retrieves the address of the currently connected account.
+   * @returns {Promise<string|null>} The current account address, or null if not connected.
    */
   async getAccount() {
     if (!this.signer) return null
@@ -123,8 +125,8 @@ export class BlockchainService {
   }
 
   /**
-   * Get account balance in AVAX
-   * @returns {Promise<string>} Formatted balance string
+   * Fetches the AVAX balance of the connected account.
+   * @returns {Promise<string>} The balance formatted as a string in AVAX, or '0' if an error occurs.
    */
   async getBalance() {
     if (!this.signer) return '0'
@@ -139,8 +141,8 @@ export class BlockchainService {
   }
 
   /**
-   * Get current network information
-   * @returns {Promise<Object>} Network data
+   * Retrieves information about the currently connected network.
+   * @returns {Promise<ethers.Network | null>} An object containing network details (name, chainId), or null if not connected.
    */
   async getNetwork() {
     if (!this.provider) return null
@@ -158,10 +160,10 @@ export class BlockchainService {
   }
 
   /**
-   * Simulate minting a pet NFT (for demo purposes)
-   * @param {Object} petData - Pet data to mint
-   * @note In production, this would interact with the EtherPets smart contract.
-   * @returns {Promise<Object>} Transaction result
+   * Simulates minting a new pet NFT.
+   * In a production environment, this would interact with a real smart contract.
+   * @param {object} petData - The metadata for the pet to be minted.
+   * @returns {Promise<object>} A simulated transaction result object containing a hash, status, and tokenId.
    */
   async mintPet(petData) {
     // Simulate blockchain transaction delay
@@ -185,11 +187,11 @@ export class BlockchainService {
   }
 
   /**
-   * Simulate updating pet mood on-chain
-   * @param {string} petId - Pet NFT token ID
-   * @note In production, this would be a call to a specific function on the smart contract.
-   * @param {string} mood - New mood value
-   * @returns {Promise<Object>} Transaction result
+   * Simulates updating a pet's mood on the blockchain.
+   * In production, this would call a specific function on the smart contract.
+   * @param {string} petId - The token ID of the pet NFT to update.
+   * @param {string} mood - The new mood value to set for the pet.
+   * @returns {Promise<object>} A simulated transaction result object.
    */
   async updatePetMood(petId, mood) {
     return new Promise((resolve, reject) => {
@@ -211,12 +213,12 @@ export class BlockchainService {
   }
 
   /**
-   * Simulate transferring tokens between accounts
-   * @param {string} to - Recipient address
-   * @param {string} amount - Amount to transfer
-   * @param {string} token - Token symbol (HMY for Harmony)
-   * @note In production, this would interact with an ERC20 token contract.
-   * @returns {Promise<Object>} Transaction result
+   * Simulates transferring a specified amount of tokens to a recipient.
+   * In production, this would interact with an ERC20 token contract.
+   * @param {string} to - The recipient's wallet address.
+   * @param {string} amount - The amount of tokens to transfer.
+   * @param {string} [token='HMY'] - The symbol of the token being transferred.
+   * @returns {Promise<object>} A simulated transaction result object.
    */
   async transferTokens(to, amount, token = 'HMY') {
     return new Promise((resolve, reject) => {
@@ -240,8 +242,8 @@ export class BlockchainService {
   }
 
   /**
-   * Check if wallet is connected
-   * @returns {boolean} Connection status
+   * Checks if a wallet is currently connected.
+   * @returns {boolean} `true` if a signer is available, otherwise `false`.
    */
   isConnected() {
     return this.signer !== null
@@ -249,6 +251,7 @@ export class BlockchainService {
 
   /**
    * Disconnect wallet
+   * Resets the provider, signer, and other related properties to their initial state.
    */
   disconnect() {
     this.provider = null
@@ -258,8 +261,8 @@ export class BlockchainService {
   }
 
   /**
-   * Listen for account changes
-   * @param {Function} callback - Callback function when accounts change
+   * Registers a callback function to be executed when the connected account changes.
+   * @param {(accounts: string[]) => void} callback - The function to call with the new array of accounts.
    */
   onAccountsChanged(callback) {
     if (window.ethereum) {
@@ -268,8 +271,8 @@ export class BlockchainService {
   }
 
   /**
-   * Listen for network changes
-   * @param {Function} callback - Callback function when network changes
+   * Registers a callback function to be executed when the network (chain) changes.
+   * @param {(chainId: string) => void} callback - The function to call with the new chain ID.
    */
   onChainChanged(callback) {
     if (window.ethereum) {
@@ -278,7 +281,7 @@ export class BlockchainService {
   }
 
   /**
-   * Remove event listeners
+   * Removes all previously registered 'accountsChanged' and 'chainChanged' listeners.
    */
   removeListeners() {
     if (window.ethereum) {

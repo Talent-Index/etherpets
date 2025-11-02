@@ -1,10 +1,6 @@
-/**
- * Main App component that sets up the application structure
- * Includes routing, context providers, and global layout
- */
 import React, { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-
+import { useUser } from './context/UserContext'
 // Context providers
 import { UserProvider, useUser } from './context/UserContext'
 import { WalletProvider } from './context/WalletContext'
@@ -27,58 +23,45 @@ import Settings from './pages/Settings'
 import Tutorial from './pages/Tutorial'
 import NotFound from './pages/NotFound'
 
-const AppContent = () => {
+function App() {
   const [showCreatePet, setShowCreatePet] = useState(false)
   const { user, createPet } = useUser()
 
-  // Automatically show create pet modal if there's a user but no pet
-  useEffect(() => {
-    if (user && user.pets.length === 0) {
-      setShowCreatePet(true)
-    }
-  }, [user])
-
-  return (
-    <div className="min-h-screen bg-primary text-white">
-      <NavBar onCreatePet={() => setShowCreatePet(true)} />
-      
-      <main className="container mx-auto px-4 py-8">
-        <Routes>
-          <Route path="/" element={<Landing onCreatePet={() => setShowCreatePet(true)} />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/garden" element={<Garden />} />
-          <Route path="/reflect" element={<Reflection />} />
-          <Route path="/inventory" element={<Inventory />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/tutorial" element={<Tutorial />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
-
-      <CreatePetModal
-        isOpen={showCreatePet}
-        onClose={() => setShowCreatePet(false)}
-        onCreate={(petData) => {
-          createPet(petData)
-          setShowCreatePet(false)
-        }}
-      />
-    </div>
-  )
-}
-
-function App() {
   return (
     <Router>
       <WalletProvider>
         <GameStateProvider>
           <UserProvider>
-            <ThemeProvider>
-              <ErrorBoundary>
-                <AppContent />
+            <ThemeProvider>  
+              <ErrorBoundary>  
+                <div className="min-h-screen bg-primary text-white">
+                  <NavBar onCreatePet={() => setShowCreatePet(true)} />
+                  
+                  <main className="container mx-auto px-4 py-8">
+                    <Routes>
+                      <Route path="/" element={<Landing onCreatePet={() => setShowCreatePet(true)} />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/garden" element={<Garden />} />
+                      <Route path="/reflect" element={<Reflection />} />
+                      <Route path="/inventory" element={<Inventory />} />
+                      <Route path="/profile" element={<Profile />} />
+                      <Route path="/settings" element={<Settings />} />
+                      <Route path="/tutorial" element={<Tutorial />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </main>
+
+                  <CreatePetModal
+                    isOpen={showCreatePet}
+                    onClose={() => setShowCreatePet(false)}
+                    onCreate={(petData) => {
+                      createPet(petData)
+                      setShowCreatePet(false)
+                    }}
+                  />
+                </div>
               </ErrorBoundary>
-            </ThemeProvider>
+            </ThemeProvider>  
           </UserProvider>
         </GameStateProvider>
       </WalletProvider>

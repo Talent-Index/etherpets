@@ -7,6 +7,7 @@ const AIPetCompanion = ({ pet, onMoodChange }) => {
   const [inputMessage, setInputMessage] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [conversationHistory, setConversationHistory] = useState([])
+  const inputRef = useRef(null);
   const messagesEndRef = useRef(null)
 
   // Initial greeting based on pet mood
@@ -41,11 +42,8 @@ const AIPetCompanion = ({ pet, onMoodChange }) => {
 
   const simulateAIResponse = async (userMessage) => {
     setIsTyping(true)
-    
-    // Simulate AI processing time
     await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000))
 
-    // Simple rule-based responses (in a real app, this would call an AI API)
     const userText = userMessage.toLowerCase()
     let response = ''
     let mood = pet.mood
@@ -81,7 +79,6 @@ const AIPetCompanion = ({ pet, onMoodChange }) => {
       mood = 'calm'
     }
     else {
-      // Default empathetic responses
       const defaultResponses = [
         "That's really interesting! Tell me more about that. 💫",
         "I appreciate you sharing that with me. 🌟",
@@ -104,7 +101,6 @@ const AIPetCompanion = ({ pet, onMoodChange }) => {
     setMessages(prev => [...prev, aiMessage])
     setConversationHistory(prev => [...prev, aiMessage])
     
-    // Update pet mood if it changed
     if (mood !== pet.mood) {
       onMoodChange?.(mood)
     }
@@ -124,7 +120,7 @@ const AIPetCompanion = ({ pet, onMoodChange }) => {
 
     setMessages(prev => [...prev, userMessage])
     setConversationHistory(prev => [...prev, userMessage])
-    setInputMessage('')
+    setInputMessage('');
 
     simulateAIResponse(inputMessage)
   }
@@ -255,7 +251,7 @@ const AIPetCompanion = ({ pet, onMoodChange }) => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => {
-                setInputMessage(reply)
+                setInputMessage(reply);
                 setTimeout(() => handleSendMessage(), 100)
               }}
               className="flex-shrink-0 bg-white/5 hover:bg-white/10 text-white text-xs px-3 py-2 rounded-full transition-colors whitespace-nowrap"
@@ -271,6 +267,7 @@ const AIPetCompanion = ({ pet, onMoodChange }) => {
         <div className="flex space-x-3">
           <div className="flex-1 relative">
             <input
+              ref={inputRef}
               type="text"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}

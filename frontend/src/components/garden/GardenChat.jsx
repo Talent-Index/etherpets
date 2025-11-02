@@ -49,7 +49,7 @@ const GardenChat = () => {
   const messagesEndRef = useRef(null)
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
   }
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const GardenChat = () => {
 
     const message = {
       id: messages.length + 1,
-      user: 'You', // In real app, this would be the actual user
+      user: 'You',
       text: newMessage,
       timestamp: new Date(),
       type: 'message',

@@ -19,7 +19,6 @@ const GardenGrid = () => {
   const handleNodeClick = (nodeId) => {
     const node = nodes.find(n => n.id === nodeId)
     if (!node.solved) {
-      // In a real app, this would open a modal with the puzzle/activity
       console.log('Opening node:', nodeId)
     }
   }

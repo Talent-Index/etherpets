@@ -1,14 +1,10 @@
 /**
- * Formatter utilities for consistent data formatting across the application
- * Includes date, time, numbers, addresses, and currency formatting
- */
-
-/**
- * Format Ethereum address for display
- * @param {string} address - Full Ethereum address
- * @param {number} startLength - Number of characters to show at start
- * @param {number} endLength - Number of characters to show at end
- * @returns {string} Formatted address (e.g., "0x1234...5678")
+ * Formats an Ethereum address for display by shortening it.
+ * e.g., "0x1234567890abcdef1234567890abcdef12345678" -> "0x1234...5678"
+ * @param {string} address - The full Ethereum address.
+ * @param {number} [startLength=6] - The number of characters to show from the beginning of the address.
+ * @param {number} [endLength=4] - The number of characters to show from the end of the address.
+ * @returns {string} The formatted, shortened address.
  */
 export const formatAddress = (address, startLength = 6, endLength = 4) => {
   if (!address || typeof address !== 'string') return ''
@@ -18,9 +14,9 @@ export const formatAddress = (address, startLength = 6, endLength = 4) => {
 }
 
 /**
- * Format seconds into MM:SS time format
- * @param {number} seconds - Total seconds
- * @returns {string} Formatted time string (e.g., "05:30")
+ * Formats a duration in seconds into a MM:SS time format.
+ * @param {number} seconds - The total number of seconds.
+ * @returns {string} The formatted time string (e.g., "05:30").
  */
 export const formatTime = (seconds) => {
   if (isNaN(seconds) || seconds < 0) return '00:00'
@@ -31,10 +27,10 @@ export const formatTime = (seconds) => {
 }
 
 /**
- * Format date into readable string
- * @param {string|Date} dateString - ISO date string or Date object
- * @param {Object} options - Intl.DateTimeFormat options
- * @returns {string} Formatted date string
+ * Formats a date string or Date object into a readable string.
+ * @param {string | Date} dateString - The ISO date string or Date object to format.
+ * @param {Intl.DateTimeFormatOptions} [options={}] - Optional `Intl.DateTimeFormat` options.
+ * @returns {string} The formatted date string.
  */
 export const formatDate = (dateString, options = {}) => {
   if (!dateString) return ''
@@ -52,9 +48,9 @@ export const formatDate = (dateString, options = {}) => {
 }
 
 /**
- * Format relative time (e.g., "2 hours ago")
- * @param {string|Date} dateString - ISO date string or Date object
- * @returns {string} Relative time string
+ * Formats a date into a relative time string (e.g., "2 hours ago").
+ * @param {string | Date} dateString - The ISO date string or Date object.
+ * @returns {string} The relative time string (e.g., "just now", "5 minutes ago").
  */
 export const formatRelativeTime = (dateString) => {
   if (!dateString) return ''
@@ -80,9 +76,9 @@ export const formatRelativeTime = (dateString) => {
 }
 
 /**
- * Format large numbers with K/M/B suffixes
- * @param {number} number - Number to format
- * @returns {string} Formatted number string
+ * Formats large numbers into a compact format with suffixes (K, M, B).
+ * @param {number} number - The number to format.
+ * @returns {string} The formatted number as a string (e.g., "1.2K", "3.4M").
  */
 export const formatNumber = (number) => {
   if (typeof number !== 'number' || isNaN(number)) return '0'
@@ -99,9 +95,9 @@ export const formatNumber = (number) => {
 }
 
 /**
- * Format energy values with percentage
- * @param {number} energy - Energy value (0-100)
- * @returns {string} Formatted energy string
+ * Formats an energy value as a percentage string.
+ * @param {number} energy - The energy value (expected to be between 0 and 100).
+ * @returns {string} The formatted energy string with a '%' symbol.
  */
 export const formatEnergy = (energy) => {
   if (typeof energy !== 'number' || isNaN(energy)) return '0%'
@@ -109,11 +105,11 @@ export const formatEnergy = (energy) => {
 }
 
 /**
- * Format token amount with symbol
- * @param {number} amount - Token amount
- * @param {string} symbol - Token symbol (default: 'HMY')
- * @param {number} decimals - Number of decimal places
- * @returns {string} Formatted token amount
+ * Formats a token amount with a given symbol and decimal precision.
+ * @param {number} amount - The amount of tokens.
+ * @param {string} [symbol='HMY'] - The symbol of the token.
+ * @param {number} [decimals=2] - The number of decimal places to display.
+ * @returns {string} The formatted token amount string (e.g., "1,234.56 HMY").
  */
 export const formatTokens = (amount, symbol = 'HMY', decimals = 2) => {
   if (typeof amount !== 'number' || isNaN(amount)) return `0 ${symbol}`
@@ -127,9 +123,9 @@ export const formatTokens = (amount, symbol = 'HMY', decimals = 2) => {
 }
 
 /**
- * Capitalize the first letter of a string
- * @param {string} str - String to capitalize
- * @returns {string} Capitalized string
+ * Capitalizes the first letter of a string and converts the rest to lowercase.
+ * @param {string} str - The string to capitalize.
+ * @returns {string} The capitalized string.
  */
 export const capitalize = (str) => {
   if (!str || typeof str !== 'string') return ''
@@ -137,10 +133,10 @@ export const capitalize = (str) => {
 }
 
 /**
- * Format file size in human-readable format
- * @param {number} bytes - File size in bytes
- * @param {number} decimals - Number of decimal places
- * @returns {string} Formatted file size string
+ * Formats a file size in bytes into a human-readable string (e.g., "1.23 KB").
+ * @param {number} bytes - The file size in bytes.
+ * @param {number} [decimals=2] - The number of decimal places for the result.
+ * @returns {string} The formatted file size string.
  */
 export const formatFileSize = (bytes, decimals = 2) => {
   if (typeof bytes !== 'number' || isNaN(bytes) || bytes === 0) return '0 Bytes'

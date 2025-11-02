@@ -93,6 +93,15 @@ const petSchema = new mongoose.Schema({
       max: 100,
     },
   },
+  marketplace: {
+    listed: { type: Boolean, default: false },
+    price: { type: Number, default: 0 },
+    listedAt: { type: Date },
+    type: {
+      type: String,
+      enum: ['adoption', 'trade'],
+    },
+  },
 }, {
   timestamps: true,
 });

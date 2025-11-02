@@ -115,6 +115,61 @@ class AIMoodService {
     return 'tired';
   }
 
+  /**
+   * Generates a contextual chat response based on user input and pet state.
+   * This simulates an AI's conversational ability and mood analysis.
+   * @param {string} userMessage - The user's input message.
+   * @param {object} pet - The pet object.
+   * @returns {{reply: string, newMood: string}} The AI's reply and the suggested new mood.
+   */
+  static generateChatResponse(userMessage, pet) {
+    const text = userMessage.toLowerCase();
+    let reply = '';
+    let newMood = pet.mood;
+
+    const moodResponses = {
+      happy: "I'm feeling absolutely fantastic! Full of energy and joy! 🌈",
+      calm: "I'm very peaceful and content. Everything feels balanced. 🍃",
+      excited: "So much energy! I feel like I could run for days! ⚡",
+      sad: "I'm feeling a bit down today, but talking to you helps. 🌧️",
+      hungry: "A bit peckish, but otherwise okay! 🍎",
+      tired: "A little sleepy, but always happy to chat with you. 😴",
+    };
+
+    if (text.includes('how are you') || text.includes('how do you feel')) {
+      reply = moodResponses[pet.mood] || "I'm doing okay, just taking things as they come.";
+    } else if (text.includes('play') || text.includes('game')) {
+      reply = "I'd love to play! What should we do together? 🎮";
+      newMood = 'excited';
+    } else if (text.includes('meditate') || text.includes('calm')) {
+      reply = "Meditation sounds perfect. Let's find our center together. 🧘";
+      newMood = 'calm';
+    } else if (text.includes('love') || text.includes('care') || text.includes('amazing')) {
+      reply = "I feel so loved and cared for. You're the best! 💖";
+      newMood = 'happy';
+    } else if (text.includes('hungry') || text.includes('feed')) {
+      reply = "Thank you for thinking of me! A snack would be lovely. 🍎";
+      newMood = 'happy';
+    } else if (text.includes('tired') || text.includes('sleep')) {
+      reply = "I could use some rest. Let's recharge together. 😴";
+      newMood = 'calm';
+    } else {
+      const defaultReplies = [
+        "That's really interesting! Tell me more about that. 💫",
+        "I appreciate you sharing that with me. 🌟",
+        "How does that make you feel? 🎭",
+        "I'm here to listen whenever you need to talk. 🌙",
+        `I wonder what that means in the world of a ${pet.species}.`,
+      ];
+      reply = defaultReplies[Math.floor(Math.random() * defaultReplies.length)];
+    }
+
+    return {
+      reply,
+      newMood,
+    };
+  }
+
   // Analyze hidden trait development
   static analyzeHiddenTraits(events) {
     const traits = { trust: 0, empathy: 0, curiosity: 0 };

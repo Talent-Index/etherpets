@@ -25,6 +25,11 @@ const adminRoutes = require('./routes/adminRoutes');
 const healthRoutes = require('./routes/healthRoutes');
 const seasonRoutes = require('./routes/seasonRoutes');
 const eventRoutes = require('./routes/eventRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const inventoryRoutes = require('./routes/inventoryRoutes');
+const shopRoutes = require('./routes/shopRoutes');
+const currencyRoutes = require('./routes/currencyRoutes');
+const rewardRoutes = require('./routes/rewardRoutes');
 
 // Connect to database
 connectDB();
@@ -83,7 +88,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API routes
+// API routes - Complete set
 app.use('/api/pets', petRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/game', gameRoutes);
@@ -97,6 +102,11 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/health', healthRoutes);
 app.use('/api/seasons', seasonRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/shop', shopRoutes);
+app.use('/api/currency', currencyRoutes);
+app.use('/api/rewards', rewardRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

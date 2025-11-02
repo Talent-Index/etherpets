@@ -12,5 +12,7 @@ router.post('/', PetController.createPet);
 router.get('/owner/:owner', PetController.getPetByOwner);
 router.post('/:petId/feed', PetController.feedPet);
 router.post('/:petId/play', PetController.playWithPet);
+router.post('/:petId/mood', PetController.updatePetMood); // New route for mood updates
+router.post('/:petId/chat', PetController.chatWithPet);
 
 module.exports = router;

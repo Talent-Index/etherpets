@@ -1,32 +1,70 @@
 # EtherPets Backend
 
-The backend server for EtherPets - an on-chain Tamagotchi-style game with hidden information mechanics built on Avalanche.
+This is the backend server for **EtherPets**, an on-chain Tamagotchi-style game focused on mindfulness and emotional wellness, built on the Avalanche blockchain.
 
 ## Features
 
 - 🐾 Pet management system
 - 🔐 Wallet-based authentication
 - 🧠 AI-powered mood analysis
-- ⛓️ Blockchain integration (Avalanche)
+- ⛓️ Smart contract integration (Avalanche C-Chain)
 - 🎮 Game event tracking
 - 📊 User statistics and streaks
 - 🔒 JWT-based security
+- 🛒 In-game shop and inventory management
+- 🏆 Leaderboards and seasonal rewards
+-  WebSocket support for real-time updates
 
 ## Tech Stack
 
 - **Runtime**: Node.js
 - **Framework**: Express.js
 - **Database**: MongoDB with Mongoose
-- **Blockchain**: Avalanche C-Chain
+- **Blockchain Interaction**: ethers.js
 - **Authentication**: JWT + Wallet signatures
 - **Real-time**: Socket.io
+- **Deployment**: Docker-ready
 
 ## Setup Instructions
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd etherpets-backend
+   # Navigate to the root of the monorepo if you haven't already
+   cd etherpets
+   ```
+
+2. **Install dependencies**
+   ```bash
+   # From the root directory
+   npm install
+   
+   # Or, if installing for the backend only
+   cd backend
+   npm install
+   ```
+
+3. **Environment Configuration**
+   ```bash
+   # In the /backend directory
+   cp .env.example .env
+   ```
+   Edit the `.env` file with your configuration:
+   - `MONGODB_URI`: Your MongoDB connection string.
+   - `JWT_SECRET`: A secret key for signing JWTs.
+   - `PRIVATE_KEY`: The private key of the wallet that will pay for gas fees.
+   - `AVALANCHE_RPC_URL`: RPC URL for the Avalanche network (e.g., Fuji testnet).
+   - `ADMIN_WALLETS`: Comma-separated list of admin wallet addresses.
+
+4. **Run the application**
+   ```bash
+   # From the /backend directory
+   # Development mode with hot-reloading
+   npm run dev
+
+   # Production mode
+   npm start
+   ```
+   The server will start on the port specified in your `.env` file (default: 5000).
 
 
 Install dependencies
@@ -44,67 +82,32 @@ bash
 # Make sure MongoDB is running locally or update MONGODB_URI
 Run the application
 
-bash
-# Development
-npm run dev
+## API Endpoints
 
-# Production
-npm start
-API Endpoints
-Authentication
-POST /api/users/login - Login with wallet
+A comprehensive list of API endpoints is available through the route definitions in `src/routes/`.
 
-Pets
-POST /api/pets - Create a new pet
+*   **Users**: `POST /api/users/login`, `GET /api/users/profile`
+*   **Pets**: `POST /api/pets`, `GET /api/pets/owner/:owner`, `POST /api/pets/:petId/feed`
+*   **Game Actions**: `POST /api/game/pets/:petId/meditate`
+*   **Inventory**: `GET /api/inventory`, `POST /api/inventory/items/:itemId/use`
+*   **Shop**: `GET /api/shop/items`, `POST /api/shop/items/:itemId/purchase`
+*   **Marketplace**: `GET /api/marketplace/listings`, `POST /api/marketplace/pets/:petId/purchase`
+*   **Rewards & Quests**: `POST /api/rewards/daily`, `GET /api/quests`
+*   **Leaderboards**: `GET /api/leaderboards/pets`
+*   **Admin**: `GET /api/admin/stats`, `GET /api/admin/users`
+*   **Health**: `GET /health`
 
-GET /api/pets/owner/:owner - Get pet by owner
+For detailed request/response formats, please refer to the controller logic in `src/controllers/`.
 
-POST /api/pets/:petId/feed - Feed pet
+## Folder Structure
 
-POST /api/pets/:petId/play - Play with pet
-
-Users
-GET /api/users/profile - Get user profile
-
-PUT /api/users/profile - Update user profile
-
-GET /api/users/stats - Get user statistics
-
-Environment Variables
-See .env.example for all required environment variables.
-
-Development
-Run tests: npm test
-
-Run tests in watch mode: npm run test:watch
-
-Lint code: npm run lint
-
-Fix linting issues: npm run lint:fix
-
-Deployment
-The application is ready for deployment on platforms like:
-
-Railway
-
-Render
-
-Heroku
-
-AWS Elastic Beanstalk
-
-Make sure to set all required environment variables in your deployment environment.
-
-text
-
-This completes the comprehensive backend structure for the EtherPets game. The backend includes:
-
-- **Database Models**: User, Pet, GameEvent with proper schemas and relationships
-- **Controllers**: Business logic for user management and pet interactions
-- **Services**: Blockchain integration and AI mood analysis
-- **Middleware**: Authentication and error handling
-- **Routes**: RESTful API endpoints
-- **Utilities**: Helper functions and configuration
-- **Security**: JWT authentication, input sanitization, rate limiting
-
-The backend is now ready for frontend integration and can handle all the core game mechanics including pet creation, feeding, playing, mood tracking, and blockchain interactions.
+```
+src/
+├── config/         # Database and environment configuration
+├── controllers/    # Express route handlers (business logic)
+├── middleware/     # Auth, error handling, validation
+├── models/         # Mongoose schemas for DB collections
+├── routes/         # API route definitions
+├── services/       # Business logic services (AI, Blockchain, etc.)
+└── utils/          # Helper functions, logger, constants
+```

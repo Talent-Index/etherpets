@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Send, Brain, Heart, Zap, Sparkles, User } from 'lucide-react'
+import apiClient from '../../utils/api'
 
 const AIPetCompanion = ({ pet, onMoodChange }) => {
   const [messages, setMessages] = useState([])
@@ -44,65 +45,27 @@ const AIPetCompanion = ({ pet, onMoodChange }) => {
     setIsTyping(true)
     await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000))
 
-    const userText = userMessage.toLowerCase()
-    let response = ''
-    let mood = pet.mood
+    // Call the backend for an AI response
+    const response = await apiClient.post(`/pets/${pet.id}/chat`, {
+      message: userMessage,
+      history: conversationHistory,
+    });
 
-    if (userText.includes('how are you') || userText.includes('how do you feel')) {
-      const responses = {
-        happy: "I'm feeling absolutely fantastic! Full of energy and joy! 🌈",
-        calm: "I'm very peaceful and content. Everything feels balanced. 🍃",
-        excited: "So much energy! I feel like I could run for days! ⚡",
-        sad: "I'm feeling a bit down today, but talking to you helps. 🌧️",
-        neutral: "I'm doing okay, just taking things as they come. "
-      }
-      response = responses[pet.mood] || responses.neutral
-    }
-    else if (userText.includes('play') || userText.includes('game')) {
-      response = "I'd love to play! What should we do together? 🎮"
-      mood = 'excited'
-    }
-    else if (userText.includes('meditate') || userText.includes('calm')) {
-      response = "Meditation sounds perfect. Let's find our center together. 🧘"
-      mood = 'calm'
-    }
-    else if (userText.includes('feed') || userText.includes('hungry')) {
-      response = "Thank you! I was getting a bit peckish. 🍎"
-      mood = 'happy'
-    }
-    else if (userText.includes('love') || userText.includes('care')) {
-      response = "I feel so loved and cared for. You're the best! 💖"
-      mood = 'happy'
-    }
-    else if (userText.includes('tired') || userText.includes('sleep')) {
-      response = "I could use some rest. Let's recharge together. 😴"
-      mood = 'calm'
-    }
-    else {
-      const defaultResponses = [
-        "That's really interesting! Tell me more about that. 💫",
-        "I appreciate you sharing that with me. 🌟",
-        "How does that make you feel? 🎭",
-        "I'm here to listen whenever you need to talk. 🌙",
-        "That sounds important. Would you like to explore that further? 🔍",
-        "I understand. Sometimes it helps to talk things through. 💭"
-      ]
-      response = defaultResponses[Math.floor(Math.random() * defaultResponses.length)]
-    }
+    const { reply, newMood } = response.data;
 
     const aiMessage = {
       id: Date.now(),
-      text: response,
+      text: reply,
       sender: 'pet',
       timestamp: new Date(),
-      mood: mood
+      mood: newMood
     }
 
     setMessages(prev => [...prev, aiMessage])
     setConversationHistory(prev => [...prev, aiMessage])
     
-    if (mood !== pet.mood) {
-      onMoodChange?.(mood)
+    if (newMood !== pet.mood) {
+      onMoodChange?.(newMood)
     }
     
     setIsTyping(false)

@@ -5,6 +5,7 @@
 import React, { createContext, useContext, useState } from 'react'
 import { useGameState } from './GameStateContext'
 import useLocalStorage from '../hooks/useLocalStorage'
+import apiClient from '../utils/api';
 
 // Create context for user data
 const UserContext = createContext()
@@ -36,19 +37,11 @@ export const UserProvider = ({ children }) => {
   const createPet = async (petData) => {
     setIsLoading(true)
     try {
-      const newPet = {
-        id: Date.now().toString(),
-        ...petData,
-        createdAt: new Date().toISOString(),
-        mood: 'happy',
-        energy: 50,
-        happiness: 50,
-        level: 1,
-        experience: 0,
-        lastAction: new Date().toISOString()
-      }
+      const response = await apiClient.post('/pets', petData);
+      const newPet = response.data.data;
 
-      setPets([newPet])
+      // Assuming the backend returns the full pet object
+      setPets(prev => [...prev, { ...newPet, id: newPet._id }]);
       setCurrentPet(newPet)
 
       // Add rewards for creating a pet
@@ -76,14 +69,20 @@ export const UserProvider = ({ children }) => {
    * @returns {Promise<boolean>} Success status
    */
   const updatePet = async (petId, updates) => {
-    setPets(prev => prev.map(pet => 
-      pet.id === petId ? { ...pet, ...updates } : pet
-    ))
-    
-    if (currentPet?.id === petId) {
-      setCurrentPet(prev => ({ ...prev, ...updates }))
+    try {
+      // Note: Your backend doesn't seem to have a generic update endpoint.
+      // This function will update local state, while specific actions call their own endpoints.
+      setPets(prev => prev.map(pet => 
+        pet.id === petId ? { ...pet, ...updates } : pet
+      ));
+      
+      if (currentPet?.id === petId) {
+        setCurrentPet(prev => ({ ...prev, ...updates }));
+      }
+    } catch (error) {
+      console.error('Error updating pet locally:', error);
+      return false;
     }
-
     return true
   }
 
@@ -93,11 +92,18 @@ export const UserProvider = ({ children }) => {
    * @param {string} newMood - The new mood value
    * @returns {Promise<boolean>} Success status
    */
-  const updatePetMood = (petId, newMood) => {
-    return updatePet(petId, { 
-      mood: newMood, 
-      lastAction: new Date().toISOString() 
-    })
+  const updatePetMood = async (petId, newMood) => {
+    try {
+      const response = await apiClient.post(`/pets/${petId}/mood`, { mood: newMood });
+      const updatedPet = response.data.data;
+      updatePet(petId, updatedPet);
+      addNotification({ type: 'pet', message: `${updatedPet.name}'s mood is now ${newMood}!` });
+      return true;
+    } catch (error) {
+      console.error('Error updating pet mood:', error);
+      addNotification({ type: 'error', message: 'Failed to update mood.' });
+      return false;
+    }
   }
 
   /**
@@ -107,64 +113,46 @@ export const UserProvider = ({ children }) => {
    * @returns {Promise<boolean>} Success status
    */
   const performPetAction = async (petId, actionType) => {
-    if (!currentPet) return false
+    if (!currentPet) return false;
 
-    // Define effects for each action type
-    const actionEffects = {
-      feed: { 
-        energy: Math.min(currentPet.energy + 20, 100), 
-        happiness: Math.min(currentPet.happiness + 10, 100),
-        mood: 'happy'
-      },
-      play: { 
-        energy: Math.max(currentPet.energy - 10, 0), 
-        happiness: Math.min(currentPet.happiness + 20, 100),
-        mood: 'excited'
-      },
-      rest: { 
-        energy: Math.min(currentPet.energy + 30, 100), 
-        mood: 'calm'
-      },
-      meditate: { 
-        happiness: Math.min(currentPet.happiness + 15, 100), 
-        mood: 'calm'
+    // The backend has separate endpoints for feed, play, etc.
+    // We'll use a generic actionType to route to the correct controller method.
+    // This assumes your backend router has routes like /pets/:petId/feed, /pets/:petId/play
+    try {
+      const response = await apiClient.post(`/pets/${petId}/${actionType}`, {
+        // Add any required body payload here, e.g., { foodType: 'basic' }
+      });
+      const { pet: updatedPet, leveledUp, newLevel } = response.data.data;
+
+      updatePet(petId, updatedPet);
+
+      if (leveledUp) {
+        levelUpPet(petId, newLevel);
       }
-    }
-
-    const effects = actionEffects[actionType] || {}
-    const success = await updatePet(petId, { 
-      ...effects, 
-      lastAction: new Date().toISOString() 
-    })
-
-    if (success) {
+      
       // Add small energy reward for interacting with pet
       addEnergy(5)
       addNotification({
         type: 'pet',
         message: `${currentPet.name} enjoyed the ${actionType}!`,
         read: false
-      })
+      });
+      return true;
+    } catch (error) {
+      console.error(`Error performing action ${actionType}:`, error);
+      addNotification({ type: 'error', message: `Action '${actionType}' failed.` });
+      return false;
     }
-
-    return success
   }
 
   /**
    * Level up a pet when it gains enough experience
    * @param {string} petId - The ID of the pet to level up
    */
-  const levelUpPet = (petId) => {
+  const levelUpPet = (petId, newLevel) => {
     setPets(prev => prev.map(pet => {
       if (pet.id === petId) {
-        const newLevel = pet.level + 1
-        return {
-          ...pet,
-          level: newLevel,
-          energy: 100,
-          happiness: 100,
-          experience: 0
-        }
+        return { ...pet, level: newLevel, experience: 0, energy: 100, happiness: 100 };
       }
       return pet
     }))
@@ -172,7 +160,7 @@ export const UserProvider = ({ children }) => {
     if (currentPet?.id === petId) {
       setCurrentPet(prev => ({
         ...prev,
-        level: prev.level + 1,
+        level: newLevel,
         energy: 100,
         happiness: 100,
         experience: 0
@@ -181,7 +169,7 @@ export const UserProvider = ({ children }) => {
 
     addNotification({
       type: 'level',
-      message: `${currentPet?.name} reached level ${currentPet?.level + 1}!`,
+      message: `${currentPet?.name} reached level ${newLevel}!`,
       read: false
     })
   }

@@ -1,4 +1,5 @@
 import { ethers } from 'ethers'
+import apiClient from './api'
 
 // Avalanche Fuji Testnet configuration
 const AVALANCHE_TESTNET = {
@@ -166,79 +167,53 @@ export class BlockchainService {
    * @returns {Promise<object>} A simulated transaction result object containing a hash, status, and tokenId.
    */
   async mintPet(petData) {
-    // Simulate blockchain transaction delay
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        try {
-          // Simulate successful minting
-          const result = {
-            hash: '0x' + Math.random().toString(16).substr(2, 64),
-            status: 'success',
-            tokenId: Math.floor(Math.random() * 10000).toString(),
-            petData: petData,
-            timestamp: new Date().toISOString()
-          }
-          resolve(result)
-        } catch (error) {
-          reject(new Error('Failed to mint pet NFT'))
-        }
-      }, 2000) // 2 second delay to simulate blockchain transaction
-    })
+    if (!this.signer) throw new Error('Wallet not connected');
+    try {
+      const ownerAddress = await this.getAccount();
+      // The backend's /api/pets endpoint handles minting
+      const response = await apiClient.post('/pets', {
+        ...petData,
+        owner: ownerAddress,
+      });
+      return response.data; // Assuming backend returns transaction details
+    } catch (error) {
+      console.error('Error minting pet:', error.response?.data || error.message);
+      throw error.response?.data || error;
+    }
   }
 
   /**
-   * Simulates updating a pet's mood on the blockchain.
-   * In production, this would call a specific function on the smart contract.
+   * Updates a pet's mood by calling the backend, which then interacts with the smart contract.
    * @param {string} petId - The token ID of the pet NFT to update.
    * @param {string} mood - The new mood value to set for the pet.
-   * @returns {Promise<object>} A simulated transaction result object.
+   * @returns {Promise<object>} The transaction result from the backend.
    */
   async updatePetMood(petId, mood) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        try {
-          const result = {
-            hash: '0x' + Math.random().toString(16).substr(2, 64),
-            status: 'success',
-            petId: petId,
-            mood: mood,
-            timestamp: new Date().toISOString()
-          }
-          resolve(result)
-        } catch (error) {
-          reject(new Error('Failed to update pet mood'))
-        }
-      }, 1000) // 1 second delay
-    })
+    if (!this.signer) throw new Error('Wallet not connected');
+    try {
+      // Assuming a backend endpoint like /api/pets/:petId/mood
+      const response = await apiClient.post(`/pets/${petId}/mood`, { mood });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating pet mood:', error.response?.data || error.message);
+      throw error.response?.data || error;
+    }
   }
 
   /**
-   * Simulates transferring a specified amount of tokens to a recipient.
-   * In production, this would interact with an ERC20 token contract.
+   * Transfers a specified amount of tokens by calling the backend.
    * @param {string} to - The recipient's wallet address.
    * @param {string} amount - The amount of tokens to transfer.
    * @param {string} [token='HMY'] - The symbol of the token being transferred.
-   * @returns {Promise<object>} A simulated transaction result object.
+   * @returns {Promise<object>} The transaction result from the backend.
    */
   async transferTokens(to, amount, token = 'HMY') {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        try {
-          const result = {
-            hash: '0x' + Math.random().toString(16).substr(2, 64),
-            status: 'success',
-            from: this.signer ? this.signer.address : '0x...',
-            to: to,
-            amount: amount,
-            token: token,
-            timestamp: new Date().toISOString()
-          }
-          resolve(result)
-        } catch (error) {
-          reject(new Error('Failed to transfer tokens'))
-        }
-      }, 1500)
-    })
+    if (!this.signer) throw new Error('Wallet not connected');
+    // This endpoint doesn't exist in your backend README, but would be the correct pattern.
+    // Example: const response = await apiClient.post('/tokens/transfer', { to, amount, token });
+    // For now, we'll keep it as a placeholder.
+    console.warn("transferTokens function needs a corresponding backend endpoint.");
+    return { hash: '0x...', status: 'pending' };
   }
 
   /**

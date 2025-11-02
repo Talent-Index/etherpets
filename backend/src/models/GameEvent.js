@@ -8,7 +8,20 @@ const gameEventSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['feed', 'play', 'rest', 'meditate', 'groom', 'train', 'social'],
+    enum: [
+      'feed',
+      'play',
+      'rest',
+      'meditate',
+      'groom',
+      'train',
+      'social',
+      'experience',
+      'level_up',
+      'decay',
+      'notification',
+      'achievement',
+    ],
     required: true,
   },
   description: {
@@ -35,6 +48,10 @@ const gameEventSchema = new mongoose.Schema({
     trust: { type: Number, default: 0 },
     empathy: { type: Number, default: 0 },
     curiosity: { type: Number, default: 0 },
+  },
+  metadata: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {},
   },
   timestamp: {
     type: Date,

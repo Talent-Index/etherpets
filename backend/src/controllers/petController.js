@@ -1,5 +1,7 @@
 const Pet = require('../models/Pet');
 const GameEvent = require('../models/GameEvent');
+const AIMoodService = require('../services/aiMoodService');
+const blockchainService = require('../services/blockchainService');
 
 class PetController {
   // Create a new pet
@@ -7,14 +9,6 @@ class PetController {
     try {
       const { name, species, owner } = req.body;
       
-      const existingPet = await Pet.findOne({ owner });
-      if (existingPet) {
-        return res.status(400).json({
-          success: false,
-          message: 'User already has a pet',
-        });
-      }
-
       const pet = new Pet({
         name,
         species,
@@ -26,6 +20,17 @@ class PetController {
       });
 
       await pet.save();
+
+      // Mint the NFT on the blockchain after saving to DB
+      try {
+        const metadataURI = `${process.env.API_BASE_URL}/api/pets/${pet._id}/metadata`; // Example metadata URL
+        const mintResult = await blockchainService.mintPetNFT(owner, pet._id.toString(), metadataURI);
+        pet.nftId = mintResult.tokenId;
+        await pet.save();
+      } catch (blockchainError) {
+        // If minting fails, we should ideally roll back the DB transaction or mark the pet as unminted.
+        console.error(`Failed to mint NFT for pet ${pet._id}:`, blockchainError);
+      }
 
       // Create birth event
       const birthEvent = new GameEvent({
@@ -55,8 +60,8 @@ class PetController {
     try {
       const { owner } = req.params;
       
-      const pet = await Pet.findOne({ owner });
-      if (!pet) {
+      const pets = await Pet.find({ owner });
+      if (!pets || pets.length === 0) {
         return res.status(404).json({
           success: false,
           message: 'Pet not found',
@@ -65,7 +70,7 @@ class PetController {
 
       res.json({
         success: true,
-        data: pet,
+        data: pets,
       });
     } catch (error) {
       res.status(500).json({
@@ -225,6 +230,88 @@ class PetController {
       training: { energy: -20, happiness: 10, hunger: -15, experience: 15 },
     };
     return gameEffects[gameType] || gameEffects.fetch;
+  }
+
+  // Update pet mood
+  static async updatePetMood(req, res) {
+    try {
+      const { petId } = req.params;
+      const { mood } = req.body;
+
+      const pet = await Pet.findById(petId);
+      if (!pet) {
+        return res.status(404).json({ success: false, message: 'Pet not found' });
+      }
+
+      pet.mood = mood;
+      await pet.save();
+
+      // Update traits on-chain
+      if (pet.nftId) {
+        await blockchainService.updatePetTraits(pet.nftId, {
+          mood: pet.mood,
+          happiness: pet.happiness,
+        });
+      }
+
+      res.json({ success: true, data: pet });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Error updating pet mood',
+        error: error.message,
+      });
+    }
+  }
+}
+
+  // Handle chat interaction with a pet
+  static async chatWithPet(req, res) {
+    try {
+      const { petId } = req.params;
+      const { message, history } = req.body;
+
+      const pet = await Pet.findById(petId);
+      if (!pet) {
+        return res.status(404).json({
+          success: false,
+          message: 'Pet not found',
+        });
+      }
+  
+      // Use the AI service to get a response
+      const { reply, newMood } = AIMoodService.generateChatResponse(message, pet);
+  
+      // If the mood changed, update the pet and log an event
+      if (newMood !== pet.mood) {
+        pet.mood = newMood;
+        await pet.save();
+  
+        const event = new GameEvent({
+          petId: pet._id,
+          type: 'social',
+          description: `Mood changed to ${newMood} after a chat.`,
+          happinessChange: 5, // Small happiness boost for interaction
+          hiddenTraitsChange: {
+            trust: 0.5,
+            empathy: 1,
+          },
+        });
+        await event.save();
+      }
+  
+      res.json({
+        success: true,
+        reply,
+        newMood,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Error during chat interaction',
+        error: error.message,
+      });
+    }
   }
 }
 

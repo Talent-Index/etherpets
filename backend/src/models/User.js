@@ -27,6 +27,18 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  coins: {
+    type: Number,
+    default: 100,
+  },
+  tokens: {
+    type: Number,
+    default: 0,
+  },
+  lastDailyReward: {
+    type: Date,
+    required: false,
+  },
   preferences: {
     theme: {
       type: String,

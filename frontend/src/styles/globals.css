@@ -1,29 +1,56 @@
+/**
+ * Global styles for EtherPets application
+ * Includes Tailwind directives and custom CSS
+ */
+
+/* Import fonts from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Press+Start+2P&display=swap');
+
+/* Tailwind CSS directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/**
+ * Base layer styles
+ */
 @layer base {
-  body {
+  html {
     font-family: 'Poppins', sans-serif;
+  }
+  
+  body {
     background: linear-gradient(135deg, #0A192F 0%, #1C2541 100%);
     min-height: 100vh;
+    overflow-x: hidden;
+  }
+  
+  /* Smooth scrolling for better UX */
+  html {
+    scroll-behavior: smooth;
   }
 }
 
+/**
+ * Component layer styles
+ */
 @layer components {
+  /* Glass morphism effect for modern UI elements */
   .glass-morphism {
     @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl;
   }
   
+  /* Primary button style used throughout the app */
   .btn-primary {
-    @apply bg-accent-teal hover:bg-accent-mint text-primary font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105;
+    @apply bg-accent-teal hover:bg-accent-mint text-primary font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-accent-teal focus:ring-opacity-50;
   }
   
+  /* Secondary button style for less prominent actions */
   .btn-secondary {
-    @apply bg-accent-cyan/20 hover:bg-accent-cyan/30 text-accent-cyan border border-accent-cyan font-semibold py-3 px-6 rounded-xl transition-all duration-300;
+    @apply bg-accent-cyan/20 hover:bg-accent-cyan/30 text-accent-cyan border border-accent-cyan font-semibold py-3 px-6 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-accent-cyan focus:ring-opacity-50;
   }
   
+  /* Mood-specific background colors */
   .mood-happy {
     @apply bg-mood-happy/20 border-mood-happy;
   }
@@ -35,15 +62,66 @@
   .mood-sad {
     @apply bg-mood-sad/20 border-mood-sad;
   }
+  
+  /* Text truncation for long content */
+  .text-truncate {
+    @apply overflow-hidden text-ellipsis whitespace-nowrap;
+  }
+  
+  /* Line clamp utilities for multi-line text truncation */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
 
-/* Custom scrollbar */
+/**
+ * Utility layer styles
+ */
+@layer utilities {
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Animation delays for staggered animations */
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+  
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+  
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+}
+
+/**
+ * Custom scrollbar styling
+ */
 ::-webkit-scrollbar {
   width: 6px;
 }
 
 ::-webkit-scrollbar-track {
   background: #1C2541;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -53,4 +131,36 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #6FFFE9;
+}
+
+/**
+ * Selection styling
+ */
+::selection {
+  background-color: rgba(91, 192, 190, 0.3);
+  color: white;
+}
+
+/**
+ * Focus styles for accessibility
+ */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #5BC0BE;
+  outline-offset: 2px;
+}
+
+/**
+ * Reduced motion for accessibility
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

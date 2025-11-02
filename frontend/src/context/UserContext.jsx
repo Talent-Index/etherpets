@@ -1,8 +1,17 @@
+/**
+ * User Context for managing user state and pet data
+ * Handles pet creation, updates, and local storage persistence
+ */
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { useGameState } from './GameStateContext'
 
+// Create context for user data
 const UserContext = createContext()
 
+/**
+ * Custom hook to access user context
+ * @returns {Object} User context value
+ */
 export const useUser = () => {
   const context = useContext(UserContext)
   if (!context) {
@@ -18,7 +27,9 @@ export const UserProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false)
   const { addEnergy, addTokens, addNotification } = useGameState()
 
-  // Load user data from localStorage
+  /**
+   * Load user data from localStorage on component mount
+   */
   useEffect(() => {
     const loadUserData = async () => {
       setIsLoading(true)
@@ -40,7 +51,9 @@ export const UserProvider = ({ children }) => {
     loadUserData()
   }, [])
 
-  // Save user data to localStorage
+  /**
+   * Save user data to localStorage whenever it changes
+   */
   useEffect(() => {
     if (user) localStorage.setItem('etherpets-user', JSON.stringify(user))
   }, [user])
@@ -53,6 +66,11 @@ export const UserProvider = ({ children }) => {
     if (currentPet) localStorage.setItem('etherpets-current-pet', JSON.stringify(currentPet))
   }, [currentPet])
 
+  /**
+   * Create a new pet for the user
+   * @param {Object} petData - The pet data to create
+   * @returns {Promise<Object>} The created pet
+   */
   const createPet = async (petData) => {
     setIsLoading(true)
     try {
@@ -89,6 +107,12 @@ export const UserProvider = ({ children }) => {
     }
   }
 
+  /**
+   * Update pet data
+   * @param {string} petId - The ID of the pet to update
+   * @param {Object} updates - The updates to apply
+   * @returns {Promise<boolean>} Success status
+   */
   const updatePet = async (petId, updates) => {
     setPets(prev => prev.map(pet => 
       pet.id === petId ? { ...pet, ...updates } : pet
@@ -101,13 +125,29 @@ export const UserProvider = ({ children }) => {
     return true
   }
 
+  /**
+   * Update pet mood
+   * @param {string} petId - The ID of the pet
+   * @param {string} newMood - The new mood value
+   * @returns {Promise<boolean>} Success status
+   */
   const updatePetMood = (petId, newMood) => {
-    return updatePet(petId, { mood: newMood, lastAction: new Date().toISOString() })
+    return updatePet(petId, { 
+      mood: newMood, 
+      lastAction: new Date().toISOString() 
+    })
   }
 
+  /**
+   * Perform an action on a pet (feed, play, rest, meditate)
+   * @param {string} petId - The ID of the pet
+   * @param {string} actionType - The type of action to perform
+   * @returns {Promise<boolean>} Success status
+   */
   const performPetAction = async (petId, actionType) => {
     if (!currentPet) return false
 
+    // Define effects for each action type
     const actionEffects = {
       feed: { 
         energy: Math.min(currentPet.energy + 20, 100), 
@@ -148,6 +188,10 @@ export const UserProvider = ({ children }) => {
     return success
   }
 
+  /**
+   * Level up a pet when it gains enough experience
+   * @param {string} petId - The ID of the pet to level up
+   */
   const levelUpPet = (petId) => {
     setPets(prev => prev.map(pet => {
       if (pet.id === petId) {
@@ -180,6 +224,10 @@ export const UserProvider = ({ children }) => {
     })
   }
 
+  /**
+   * Switch the currently active pet
+   * @param {string} petId - The ID of the pet to switch to
+   */
   const switchPet = (petId) => {
     const pet = pets.find(p => p.id === petId)
     if (pet) {
@@ -187,6 +235,7 @@ export const UserProvider = ({ children }) => {
     }
   }
 
+  // Context value containing all user-related state and functions
   const value = {
     user,
     setUser,

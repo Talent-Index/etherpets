@@ -4,7 +4,7 @@ import { useWallet } from '../context/WalletContext'
 import { useUser } from '../context/UserContext'
 import { Sparkles, Heart, Users, Zap } from 'lucide-react'
 
-const Landing = () => {
+const Landing = ({ onCreatePet }) => {
   const { connectWallet, isConnected, isConnecting } = useWallet()
   const { user, currentPet } = useUser()
 
@@ -122,6 +122,38 @@ const Landing = () => {
             </div>
           </div>
         </motion.div>
+
+        {!isConnected ? (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={connectWallet}
+            disabled={isConnecting}
+            className="btn-primary text-lg px-8 py-4"
+          >
+            {isConnecting ? 'Connecting...' : 'Connect Wallet to Begin'}
+          </motion.button>
+        ) : !currentPet ? (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onCreatePet}
+            className="btn-primary text-lg px-8 py-4"
+          >
+            Create Your SoulPet
+          </motion.button>
+        ) : (
+          <Link to="/dashboard">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="btn-primary text-lg px-8 py-4"
+            >
+              Enter Your Sanctuary
+            </motion.button>
+          </Link>
+        )}
+        
       </div>
     </div>
   )

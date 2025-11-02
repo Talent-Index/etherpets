@@ -2,8 +2,9 @@
  * User Context for managing user state and pet data
  * Handles pet creation, updates, and local storage persistence
  */
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState } from 'react'
 import { useGameState } from './GameStateContext'
+import useLocalStorage from '../hooks/useLocalStorage'
 
 // Create context for user data
 const UserContext = createContext()
@@ -21,50 +22,11 @@ export const useUser = () => {
 }
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null)
-  const [pets, setPets] = useState([])
-  const [currentPet, setCurrentPet] = useState(null)
+  const [user, setUser] = useLocalStorage('etherpets-user', null)
+  const [pets, setPets] = useLocalStorage('etherpets-pets', [])
+  const [currentPet, setCurrentPet] = useLocalStorage('etherpets-current-pet', null)
   const [isLoading, setIsLoading] = useState(false)
   const { addEnergy, addTokens, addNotification } = useGameState()
-
-  /**
-   * Load user data from localStorage on component mount
-   */
-  useEffect(() => {
-    const loadUserData = async () => {
-      setIsLoading(true)
-      try {
-        const savedUser = localStorage.getItem('etherpets-user')
-        const savedPets = localStorage.getItem('etherpets-pets')
-        const savedCurrentPet = localStorage.getItem('etherpets-current-pet')
-
-        if (savedUser) setUser(JSON.parse(savedUser))
-        if (savedPets) setPets(JSON.parse(savedPets))
-        if (savedCurrentPet) setCurrentPet(JSON.parse(savedCurrentPet))
-      } catch (error) {
-        console.error('Error loading user data:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadUserData()
-  }, [])
-
-  /**
-   * Save user data to localStorage whenever it changes
-   */
-  useEffect(() => {
-    if (user) localStorage.setItem('etherpets-user', JSON.stringify(user))
-  }, [user])
-
-  useEffect(() => {
-    localStorage.setItem('etherpets-pets', JSON.stringify(pets))
-  }, [pets])
-
-  useEffect(() => {
-    if (currentPet) localStorage.setItem('etherpets-current-pet', JSON.stringify(currentPet))
-  }, [currentPet])
 
   /**
    * Create a new pet for the user

@@ -6,6 +6,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi'
 import { injected } from 'wagmi/connectors'
 import { avalancheFuji } from 'wagmi/chains'
+import { useNotificationContext } from './NotificationContext'
 
 // Create context for wallet data
 const WalletContext = createContext()
@@ -24,6 +25,7 @@ export const useWallet = () => {
 
 export const WalletProvider = ({ children }) => {
   const [error, setError] = useState(null)
+  const { notifySuccess, notifyError } = useNotificationContext()
 
   // Wagmi hooks for wallet state and actions
   const { address, isConnected, isConnecting, chain } = useAccount()
@@ -39,12 +41,18 @@ export const WalletProvider = ({ children }) => {
     try {
       // Find the injected connector (e.g., MetaMask)
       const injectedConnector = connectors.find(c => c.id === 'injected')
-      connect({ connector: injectedConnector || connectors[0] })
+      connect({ connector: injectedConnector || connectors[0] }, {
+        onSuccess: (data) => {
+          notifySuccess(`Wallet connected: ${data.accounts[0].slice(0, 6)}...${data.accounts[0].slice(-4)}`)
+        },
+        onError: (err) => {
+          notifyError(err.message || 'Failed to connect wallet.')
+        }
+      })
     } catch (err) {
-      console.error('Error connecting wallet:', err)
-      setError(err.message)
+      notifyError(err.message || 'An unexpected error occurred.')
     }
-  }, [connect, connectors])
+  }, [connect, connectors, notifySuccess, notifyError])
 
   /**
    * Disconnect the wallet

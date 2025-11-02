@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -26,7 +26,7 @@ contract EtherItem is ERC1155, Ownable {
     event ItemPurchased(address indexed buyer, uint256 indexed itemId, uint256 amount);
     event ItemUsed(address indexed user, uint256 indexed petId, uint256 itemId, uint256 amount);
 
-    constructor() ERC1155("https://api.etherpets.com/api/item/{id}.json") {}
+    constructor() ERC1155("https://api.etherpets.com/api/item/{id}.json") Ownable(msg.sender) {}
 
     function createItem(
         string memory name,

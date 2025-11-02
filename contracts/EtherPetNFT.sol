@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "hardhat/console.sol";
 
 contract EtherPetNFT is ERC721, ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
@@ -32,7 +33,7 @@ contract EtherPetNFT is ERC721, ERC721URIStorage, Ownable {
     event PetUpdated(uint256 indexed tokenId, uint256 mood, uint256 energy, uint256 hunger, uint256 happiness);
     event PetEvolved(uint256 indexed tokenId, uint256 newGrowthStage);
 
-    constructor() ERC721("EtherPet", "EPET") {}
+    constructor() ERC721("EtherPet", "EPET") Ownable(msg.sender) {}
 
     function mintPet(string memory name, string memory tokenURI) external {
         require(!hasMinted[msg.sender], "Already minted a pet");
@@ -153,15 +154,27 @@ contract EtherPetNFT is ERC721, ERC721URIStorage, Ownable {
         return a < b ? a : b;
     }
 
-    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
-        super._burn(tokenId);
+    function totalSupply() public view returns (uint256) {
+        return _tokenIdCounter.current();
     }
 
-    function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+    // The following functions are overrides required by Solidity.
+
+    function _update(address to, uint256 tokenId, address auth)
+        internal
+        override(ERC721, ERC721URIStorage)
+        returns (address)
+    {
+        return super._update(to, tokenId, auth);
+    }
+
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        override(ERC721, ERC721URIStorage)
+        returns (string memory)
+    {
         return super.tokenURI(tokenId);
     }
 
-    function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721URIStorage) returns (bool) {
-        return super.supportsInterface(interfaceId);
-    }
 }

@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./EtherPetNFT.sol";
 import "./EtherItem.sol";
+import "./EtherReward.sol";
 
 contract EtherGameLogic is Ownable {
     EtherPetNFT public petNFT;
@@ -53,9 +54,12 @@ contract EtherGameLogic is Ownable {
     event GardenEnergyUpdated(uint256 indexed gardenId, uint256 totalEnergy);
     event GardenBloom(uint256 indexed gardenId, uint256 reward);
 
-    constructor(address _petNFT, address _itemContract) {
+    EtherReward public rewardToken;
+
+    constructor(address _petNFT, address _itemContract, address _rewardToken) Ownable(msg.sender) {
         petNFT = EtherPetNFT(_petNFT);
         itemContract = EtherItem(_itemContract);
+        rewardToken = EtherReward(_rewardToken);
     }
 
     // Claim daily reward
@@ -63,7 +67,7 @@ contract EtherGameLogic is Ownable {
         uint256 lastClaim = lastDailyReward[msg.sender];
         uint256 currentDay = block.timestamp / 1 days;
 
-        require(currentDay > lastClaim, "Already claimed today");
+        require(currentDay > lastClaim, "Daily reward already claimed");
 
         // Check streak
         if (lastClaim == currentDay - 1 days) {
@@ -76,7 +80,7 @@ contract EtherGameLogic is Ownable {
         lastDailyReward[msg.sender] = currentDay;
 
         // Mint reward items
-        itemContract.purchaseItem{value: 0}(1, reward); // Assuming item 1 is the reward token
+        rewardToken.mint(msg.sender, reward * (10**rewardToken.decimals()));
 
         emit DailyRewardClaimed(msg.sender, reward, userStreaks[msg.sender]);
     }
@@ -109,7 +113,7 @@ contract EtherGameLogic is Ownable {
         uint256[] memory userPets = petNFT.getOwnerPets(msg.sender);
         bool hasRequiredLevel = false;
         for (uint256 i = 0; i < userPets.length; i++) {
-            (,,,,,,uint256 growthStage,) = petNFT.pets(userPets[i]);
+            (, , , , , , uint256 growthStage, ,) = petNFT.pets(userPets[i]);
             if (growthStage >= challenge.requiredPetLevel) {
                 hasRequiredLevel = true;
                 break;
@@ -123,7 +127,7 @@ contract EtherGameLogic is Ownable {
         challengeCompleted[challengeId][msg.sender] = true;
         
         // Give reward
-        itemContract.purchaseItem{value: 0}(1, challenge.reward);
+        rewardToken.mint(msg.sender, challenge.reward * (10**rewardToken.decimals()));
 
         emit ChallengeCompleted(msg.sender, challengeId, challenge.reward);
     }
@@ -172,7 +176,7 @@ contract EtherGameLogic is Ownable {
         uint256 rewardPerMember = garden.energyThreshold / garden.members.length;
         
         for (uint256 i = 0; i < garden.members.length; i++) {
-            itemContract.purchaseItem{value: 0}(1, rewardPerMember);
+            rewardToken.mint(garden.members[i], rewardPerMember * (10**rewardToken.decimals()));
         }
 
         emit GardenBloom(gardenId, rewardPerMember);
@@ -181,7 +185,7 @@ contract EtherGameLogic is Ownable {
     // Update pet stats based on time decay
     function updatePetDecay(uint256 petId) external {
         EtherPetNFT.Pet memory pet = petNFT.getPet(petId);
-        require(pet.owner == msg.sender, "Not pet owner");
+        require(petNFT.ownerOf(petId) == msg.sender, "Not pet owner");
 
         uint256 timePassed = block.timestamp - pet.lastInteraction;
         uint256 daysPassed = timePassed / 1 days;

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./EtherPetNFT.sol";
@@ -38,7 +38,7 @@ contract EtherAura is Ownable {
     event AuraExpired(uint256 indexed petId, AuraType auraType);
     event AuraSynergy(uint256 indexed petId1, uint256 indexed petId2, AuraType combinedAura);
 
-    constructor(address _petNFT) {
+    constructor(address _petNFT) Ownable(msg.sender) {
         petNFT = EtherPetNFT(_petNFT);
         
         // Initialize aura colors

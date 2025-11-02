@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./EtherPetNFT.sol";
@@ -50,7 +50,7 @@ contract EtherMeditation is Ownable {
     event ChallengeJoined(uint256 indexed challengeId, address participant);
     event ChallengeCompleted(uint256 indexed challengeId, address participant, uint256 reward);
 
-    constructor(address _petNFT, address _rewardToken) {
+    constructor(address _petNFT, address _rewardToken) Ownable(msg.sender) {
         petNFT = EtherPetNFT(_petNFT);
         rewardToken = EtherReward(_rewardToken);
     }
@@ -89,7 +89,7 @@ contract EtherMeditation is Ownable {
         uint256 reward = _calculateReward(duration);
         
         // Check and update streak
-        uint256 currentDay = block.timestamp / 1 days;
+        uint256 currentDay = block.timestamp / 1 days; // Use 'days' for clarity
         if (lastMeditationDate[msg.sender] == currentDay - 1 days) {
             meditationStreaks[msg.sender]++;
         } else if (lastMeditationDate[msg.sender] != currentDay) {

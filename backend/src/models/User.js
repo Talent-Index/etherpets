@@ -39,6 +39,14 @@ const userSchema = new mongoose.Schema({
     type: Date,
     required: false,
   },
+  achievements: {
+    type: [String],
+    default: [],
+  },
+  achievementPoints: {
+    type: Number,
+    default: 0,
+  },
   preferences: {
     theme: {
       type: String,

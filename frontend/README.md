@@ -1,73 +1,152 @@
 # EtherPets Frontend
 
-This is the frontend application for **EtherPets**, a mindful on-chain companion game. It provides the user interface for interacting with SoulPets, managing wallet connections, and engaging in the game's wellness-focused activities.
+React-based web application for EtherPets, a blockchain-powered digital companion platform focused on mindfulness and emotional wellness. Built with modern web technologies and integrated with Avalanche blockchain.
 
-## ✨ Features
+## Overview
 
-*   **🦊 Pet Dashboard:** A central hub to view your pet's status, mood, and stats.
-*   **🤖 AI Companion Chat:** Engage in conversation with your pet through an AI-powered chat interface.
-*   **🎤 Voice Commands:** Control pet actions and interactions using your voice.
-*   **🧘‍♀️ Mindful Rituals:** Participate in guided meditations and other wellness activities.
-*   **🎨 Dynamic Theming:** Switch between light and dark modes for a comfortable viewing experience.
-*   **🔐 Secure Wallet Integration:** Connect your wallet securely using Wagmi and WalletConnect.
-*   **📊 Interactive Charts:** Visualize your pet's statistics and growth over time.
-*   **🎉 Real-time Notifications:** Receive instant feedback and updates on your pet's activities.
+EtherPets provides an interactive interface for users to create, manage, and interact with digital companions. The platform combines blockchain technology with wellness-focused activities including meditation, reflection, and community engagement.
 
-## 🛠️ Tech Stack
+## Technology Stack
 
-- **Framework**: React (with Vite)
-- **Styling**: TailwindCSS
-- **Animation**: Framer Motion
-- **Blockchain**: Wagmi, Viem, ethers.js
-- **State Management**: React Context API
-- **Routing**: React Router
+- **Framework:** React 18.2 with Vite
+- **Styling:** TailwindCSS with custom theming
+- **Animations:** Framer Motion
+- **Blockchain:** Wagmi, Viem, Ethers.js
+- **State Management:** React Context API
+- **Routing:** React Router v6
+- **Data Visualization:** Recharts
+- **Icons:** Lucide React
+- **Real-time Communication:** Socket.io Client
 
-## 🚀 Getting Started
+## Prerequisites
 
-These instructions assume you are running the project from the root of the `etherpets` monorepo.
+- Node.js 16.x or higher
+- npm or yarn package manager
+- MetaMask or compatible Web3 wallet
 
-### 1. Install Dependencies
+## Installation
 
-If you haven't already, install all project dependencies from the root directory.
+1. Clone the repository and navigate to the frontend directory:
+```bash
+cd etherpets/frontend
+```
 
+2. Install dependencies:
 ```bash
 npm install
-npm run install:all
 ```
 
-### 2. Environment Variables
-
-The frontend uses environment variables for configuration. You can create a `.env` file in the `/frontend` directory if needed, but most configuration is handled by the backend.
-
-```
-VITE_API_URL=http://localhost:5000/api
-```
-
-### 3. Run the Development Server
-
-Start the frontend development server.
-
+3. Configure environment variables by creating a `.env` file:
 ```bash
-# From the /frontend directory
+cp .env.example .env
+```
+
+4. Update the `.env` file with your configuration:
+```env
+VITE_API_URL=http://localhost:5000/api
+VITE_AVALANCHE_RPC=https://api.avax-test.network/ext/bc/C/rpc
+VITE_CHAIN_ID=43113
+```
+
+## Development
+
+Start the development server:
+```bash
 npm run dev
 ```
 
-The application will be available at `http://localhost:3000`.
+The application will be available at `http://localhost:5173`
 
-## 📂 Folder Structure
+## Build
 
-The `src` directory is organized to keep the codebase modular and maintainable.
+Create a production build:
+```bash
+npm run build
+```
+
+Preview the production build:
+```bash
+npm run preview
+```
+
+## Project Structure
 
 ```
 src/
-├── assets/         # Static assets like images, fonts, and icons
-├── components/     # Reusable React components (e.g., PetCard, EnergyBar)
-├── context/        # Global state management with React Context (User, Wallet, GameState)
-├── hooks/          # Custom React hooks for shared logic
-├── pages/          # Top-level page components for each route
-├── utils/          # Utility functions (blockchain, formatters, API client)
-├── App.jsx         # Main application component with routing
-└── main.jsx        # Application entry point
+├── components/      # Reusable UI components
+│   ├── common/      # Shared components (buttons, modals, etc.)
+│   ├── layout/      # Layout components (header, sidebar)
+│   ├── pets/        # Pet-related components
+│   ├── garden/      # Community garden components
+│   ├── rituals/     # Mindfulness ritual components
+│   ├── ar/          # AR viewing components
+│   └── voice/       # Voice command components
+├── context/         # React Context providers
+├── hooks/           # Custom React hooks
+├── pages/           # Route page components
+├── utils/           # Utility functions and helpers
+├── data/            # Static data and configurations
+├── styles/          # Global styles and CSS
+├── App.jsx          # Main application component
+└── main.jsx         # Application entry point
 ```
 
-This structure separates concerns, making it easier to navigate, develop, and test different parts of the application.
+## Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+
+## Key Features
+
+### Pet Management
+- Create and customize digital companions
+- Track pet mood, energy, and statistics
+- View pet evolution and growth
+
+### Mindfulness Activities
+- Daily ritual system with rewards
+- Guided meditation sessions
+- Breathing exercises
+- Reflection journaling
+
+### Community Features
+- Community garden for collaborative activities
+- Real-time chat functionality
+- Shared puzzles and challenges
+
+### Blockchain Integration
+- Wallet connection via Wagmi
+- Avalanche network support
+- On-chain pet ownership
+- Transaction management
+
+## Configuration Files
+
+- `vite.config.js` - Vite build configuration
+- `tailwind.config.js` - TailwindCSS configuration
+- `postcss.config.js` - PostCSS configuration
+- `.eslintrc.cjs` - ESLint rules
+
+## Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## Contributing
+
+1. Follow the existing code style and conventions
+2. Write clear commit messages
+3. Test thoroughly before submitting changes
+4. Update documentation as needed
+
+## License
+
+See LICENSE file in the root directory.
+
+## Support
+
+For issues and questions, please refer to the main project repository.

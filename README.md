@@ -142,7 +142,7 @@ Before you begin, ensure you have:
 **1. Clone the Repository**
 
 ```bash
-git clone https://github.com/yourusername/etherpets.git
+git clone https://github.com/Talent-Index/etherpets.git
 cd etherpets
 ```
 

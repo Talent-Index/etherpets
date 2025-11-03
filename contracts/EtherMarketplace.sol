@@ -43,7 +43,7 @@ contract EtherMarketplace is ReentrancyGuard, Ownable {
     event ItemSold(uint256 indexed itemId, address seller, address buyer, uint256 amount, uint256 price);
     event ListingCancelled(uint256 indexed tokenId, address seller);
 
-    constructor(address _petNFT, address _itemContract) {
+    constructor(address _petNFT, address _itemContract) Ownable(msg.sender) {
         petNFT = EtherPetNFT(_petNFT);
         itemContract = EtherItem(_itemContract);
     }

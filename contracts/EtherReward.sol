@@ -12,7 +12,7 @@ contract EtherReward is ERC20, Ownable {
     event MinterAdded(address indexed minter);
     event MinterRemoved(address indexed minter);
 
-    constructor() ERC20("EtherPets Reward", "EPR") {
+    constructor() ERC20("EtherPets Reward", "EPR") Ownable(msg.sender) {
         _mint(msg.sender, 1000000 * 10 ** decimals()); // Initial supply
     }
 

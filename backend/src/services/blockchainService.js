@@ -1,10 +1,28 @@
 const { ethers } = require('ethers');
-const petNFTAbi = require('../../contracts/artifacts/contracts/EtherPetNFT.sol/EtherPetNFT.json').abi;
+const path = require('path');
+const fs = require('fs');
+
+// Try to load contract ABI from artifacts
+let petNFTAbi = null;
+const artifactsPath = path.join(__dirname, '../../../contracts/artifacts/contracts/EtherPetNFT.sol/EtherPetNFT.json');
+
+try {
+  if (fs.existsSync(artifactsPath)) {
+    petNFTAbi = require(artifactsPath).abi;
+  } else {
+    console.warn(' Contract artifacts not found. Please compile contracts first:');
+    console.warn('   cd contracts && npx hardhat compile');
+    console.warn('   Then copy artifacts to backend or ensure contracts are deployed.');
+  }
+} catch (error) {
+  console.warn(' Could not load contract ABI:', error.message);
+}
 
 // Load contract addresses from environment variables
 const PET_NFT_ADDRESS = process.env.PET_NFT_ADDRESS;
 if (!PET_NFT_ADDRESS) {
-  console.warn("PET_NFT_ADDRESS environment variable not set. Blockchain interactions will fail.");
+  console.warn(" PET_NFT_ADDRESS environment variable not set. Blockchain interactions will fail.");
+  console.warn("   Deploy contracts and add addresses to .env file.");
 }
 
 class BlockchainService {
@@ -12,13 +30,26 @@ class BlockchainService {
     this.provider = new ethers.JsonRpcProvider(
       process.env.AVALANCHE_RPC_URL || 'https://api.avax-test.network/ext/bc/C/rpc'
     );
-    this.wallet = new ethers.Wallet(
-      process.env.PRIVATE_KEY,
-      this.provider
-    );
-    this.petNftContract = PET_NFT_ADDRESS
+    
+    // Only initialize wallet if private key exists
+    if (process.env.PRIVATE_KEY) {
+      this.wallet = new ethers.Wallet(
+        process.env.PRIVATE_KEY,
+        this.provider
+      );
+    } else {
+      console.warn('⚠️ PRIVATE_KEY not set. Blockchain write operations will fail.');
+      this.wallet = null;
+    }
+    
+    // Initialize contract only if both address and ABI are available
+    this.petNftContract = (PET_NFT_ADDRESS && petNFTAbi && this.wallet)
       ? new ethers.Contract(PET_NFT_ADDRESS, petNFTAbi, this.wallet)
       : null;
+      
+    if (!this.petNftContract) {
+      console.warn('⚠️ Pet NFT contract not initialized. Check environment variables and artifacts.');
+    }
   }
 
   // Mint a new pet NFT

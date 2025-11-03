@@ -1,140 +1,420 @@
-# EtherPets: A Mindful On-Chain Companion Game
+# EtherPets: Mindful Blockchain Companions
 
-![EtherPets Banner](https://user-images.githubusercontent.com/1011226/180000000-placeholder-image.png)
+<div align="center">
 
-**EtherPets** is a decentralized wellness game built on the Avalanche blockchain. It reimagines the classic Tamagotchi experience, focusing on emotional connection, mindfulness, and mental well-being. Players nurture a "SoulPet," a digital companion whose growth and mood are a reflection of the player's own mindfulness practices and emotional state.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Blockchain: Avalanche](https://img.shields.io/badge/Blockchain-Avalanche-red)](https://www.avax.network/)
+[![Built with: React](https://img.shields.io/badge/Built_with-React-61DAFB?logo=react)](https://reactjs.org/)
+[![Backend: Node.js](https://img.shields.io/badge/Backend-Node.js-339933?logo=node.js)](https://nodejs.org/)
 
-The game is designed to be a gentle, restorative daily ritual, not a stressful grind. It blends on-chain ownership with off-chain AI-driven emotional intelligence to create a unique and personal journey.
+**A decentralized wellness game where caring for your digital companion nurtures your own mental well-being.**
 
-## 🌟 Core Vision
+[Features](#-features) • [Quick Start](#-quick-start) • [Architecture](#-architecture) • [Documentation](#-documentation)
 
-*   **Problem:** Modern digital spaces, including games, often contribute to stress and overstimulation.
-*   **Solution:** EtherPets offers a "healing" gameplay loop. It rewards calmness, consistency, and kindness, helping players feel more centered and emotionally aware after each session.
-*   **The Twist:** The game incorporates a "hidden information" layer. Your SoulPet's deepest emotional states (like Trust and Empathy) are not shown as numbers but are inferred through its behavior, encouraging players to learn, observe, and connect with their companion on a deeper level.
-
-## ✨ Features
-
-*   **🐾 On-Chain SoulPets:** Each pet is a unique NFT on the Avalanche blockchain, with its core traits and evolution milestones stored immutably.
-*   **🧠 AI-Powered Moods:** An integrated AI service analyzes player interactions to generate dynamic, responsive moods and behaviors for each pet.
-*   **🧘 Mindful Rituals:** Engage in daily activities like guided meditations, gratitude journaling, and focus puzzles that nurture both you and your pet.
-*   **🌐 Decentralized Economy:** A player-driven marketplace for in-game items, cosmetics, and food, all powered by smart contracts.
-*   **🤝 Social & Collaborative Play:** Visit other players' gardens, send positive energy, and participate in community-wide "Harmony Events."
-*   **🔐 Wallet-Based Identity:** Secure and seamless authentication using your existing crypto wallet.
-*   **📊 Rich Analytics & History:** Track your pet's growth, your mindfulness streak, and export your journey's data.
-*   **🚀 Full-Stack Application:** A complete monorepo with a React frontend, Node.js backend, and Solidity smart contracts.
-
-## 🛠️ Tech Stack & Architecture
-
-The project is a monorepo divided into three main parts: `frontend`, `backend`, and `contracts`.
-
-```
- etherpets/
- │
- ├── frontend/      # React UI (Vite, TailwindCSS, Wagmi)
- ├── backend/       # Node.js API (Express, MongoDB, ethers.js)
- └── contracts/     # Solidity Smart Contracts (Hardhat, OpenZeppelin)
-```
-
-*   **Frontend:** A responsive web application built with **React (Vite)**, **Wagmi** for wallet interactions, **TailwindCSS** for styling, and **Framer Motion** for smooth animations.
-*   **Backend:** A robust API built with **Node.js** and **Express**, using **MongoDB** for storing off-chain data (like game events and user progress) and **ethers.js** to communicate with the blockchain.
-*   **Smart Contracts:** **Solidity** contracts for the Pet NFTs (ERC-721), in-game items (ERC-1155), and marketplace logic, developed and tested with **Hardhat**.
-*   **Blockchain:** Deployed on the **Avalanche C-Chain** (or Fuji Testnet) for fast, low-cost transactions.
+</div>
 
 ---
 
-## 🚀 Getting Started
+## Overview
 
-Follow these steps to set up and run the entire EtherPets project locally.
+**EtherPets** is a blockchain-powered companion game that reimagines the classic Tamagotchi experience through the lens of mindfulness and emotional wellness. Built on Avalanche for fast, low-cost transactions, EtherPets combines:
+
+- Engaging Gameplay - Daily rituals, meditation exercises, and care mechanics
+- Blockchain Ownership - True ownership of your digital companion as an NFT
+- AI-Powered Emotions - Dynamic mood system that responds to your care patterns
+- Social Connection - Community gardens, collaborative events, and player interactions
+- Mental Wellness - Designed to reduce stress and promote mindfulness through play
+
+### The Vision
+
+**Problem:** Most games demand attention, create stress, and contribute to digital burnout.
+
+**Solution:** EtherPets rewards calmness, consistency, and kindness. Each play session (5-15 minutes) leaves you feeling refreshed, not drained.
+
+**Innovation:** Hidden emotional states (Trust, Empathy, Curiosity) aren't displayed as numbers—you learn your pet's personality through observation, creating a deeper emotional connection.
+
+## Core Features
+
+### Your SoulPet Companion
+- Unique NFTs: Each pet is a one-of-a-kind ERC-721 token on Avalanche
+- Dynamic Evolution: Grows and changes based on your care patterns
+- Emotional Intelligence: AI-powered mood system responds to your actions
+- Hidden Attributes: Discover your pet's personality through observation
+
+### Mindfulness Mechanics
+- Daily Rituals: Breathing exercises, gratitude journaling, focus puzzles
+- Meditation Sessions: Guided activities that benefit both you and your pet
+- Stress-Free Design: No penalties for taking breaks—your pet simply rests
+- Progress Tracking: Monitor your mindfulness streak and emotional growth
+
+### Blockchain Integration
+- True Ownership: Your pet lives on-chain, fully owned by you
+- Marketplace: Buy, sell, and trade in-game items (ERC-1155)
+- Transparent Economy: All transactions recorded on Avalanche
+- Low Fees: Fast, affordable interactions on Avalanche C-Chain
+
+### Social Features
+- Community Gardens: Join collaborative spaces with other players
+- Energy Sharing: Send positive vibes to other pets
+- Harmony Events: Global synchronization sessions
+- Achievements: Unlock rewards through consistent care
+
+## Architecture
+
+### Technology Stack
+
+#### Frontend
+- Framework: React 18 with Vite
+- Styling: TailwindCSS + Framer Motion
+- Web3: Wagmi, Viem, ethers.js
+- State Management: React Context API
+- UI Components: Lucide React icons
+- Real-time: Socket.io Client
+
+#### Backend
+- Runtime: Node.js with Express
+- Database: MongoDB with Mongoose
+- Blockchain: ethers.js for Avalanche integration
+- Authentication: JWT + Wallet signatures
+- Real-time: Socket.io for multiplayer
+- Security: Helmet, rate limiting, CORS
+
+#### Smart Contracts
+- Language: Solidity ^0.8.19
+- Framework: Hardhat
+- Standards: ERC-721 (Pets), ERC-1155 (Items), ERC-20 (Rewards)
+- Network: Avalanche C-Chain / Fuji Testnet
+- Libraries: OpenZeppelin Contracts
+
+### Project Structure
+
+```
+etherpets/
+├── frontend/                  # React web application
+│   ├── src/
+│   │   ├── components/       # UI components (36 total)
+│   │   ├── pages/            # Route pages (10 pages)
+│   │   ├── context/          # State management (5 contexts)
+│   │   ├── hooks/            # Custom React hooks
+│   │   ├── utils/            # Helper functions
+│   │   └── styles/           # Global styles
+│   └── package.json
+│
+├── backend/                   # Node.js API server
+│   ├── src/
+│   │   ├── config/           # Configuration files
+│   │   ├── controllers/      # Request handlers (18 files)
+│   │   ├── models/           # MongoDB schemas (8 models)
+│   │   ├── routes/           # API routes (18 routes)
+│   │   ├── services/         # Business logic (15 services)
+│   │   ├── middleware/       # Express middleware
+│   │   └── utils/            # Utility functions
+│   └── package.json
+│
+├── contracts/                 # Solidity smart contracts
+│   ├── EtherPetNFT.sol       # Pet NFT (ERC-721)
+│   ├── EtherItem.sol         # Items (ERC-1155)
+│   ├── EtherGameLogic.sol    # Game mechanics
+│   ├── EtherReward.sol       # Reward token (ERC-20)
+│   ├── EtherMeditation.sol   # Meditation system
+│   ├── EtherAura.sol         # Aura management
+│   ├── EtherMarketplace.sol  # NFT marketplace
+│   ├── scripts/              # Deployment scripts
+│   └── hardhat.config.js
+│
+└── README.md                  # This file
+```
+
+## Quick Start
 
 ### Prerequisites
 
-*   Node.js (v18 or later)
-*   Yarn or npm
-*   MongoDB instance running locally or a connection string from MongoDB Atlas.
-*   A crypto wallet like MetaMask with funds on the Avalanche Fuji Testnet.
+Before you begin, ensure you have:
 
-### 1. Clone the Repository
+- Node.js v18 or higher
+- npm or yarn package manager
+- MongoDB (local installation or MongoDB Atlas account)
+- MetaMask or compatible Web3 wallet
+- Avalanche Fuji Testnet AVAX (get from [faucet](https://faucet.avax.network/))
+
+### Installation
+
+**1. Clone the Repository**
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/yourusername/etherpets.git
 cd etherpets
 ```
 
-### 2. Install Dependencies
-
-Install dependencies for all three packages from the root directory.
+**2. Install Dependencies**
 
 ```bash
-# Install root, backend, frontend, and contract dependencies
+# Install backend dependencies
+cd backend
 npm install
-npm run install:all
+
+# Install frontend dependencies
+cd ../frontend
+npm install
+
+# Install contract dependencies
+cd ../contracts
+npm install
 ```
 
-### 3. Environment Configuration
+**3. Configure Environment Variables**
 
-Create a `.env` file in the root of the `backend` directory (`/backend/.env`) by copying the example file.
+Create `.env` files in each directory:
 
 ```bash
+# Backend environment
 cp backend/.env.example backend/.env
-```
 
-Then, create a `.env` file in the root of the `contracts` directory (`/contracts/.env`).
-
-```bash
+# Contracts environment
 cp contracts/.env.example contracts/.env
+
+# Frontend environment
+cp frontend/.env.example frontend/.env
 ```
 
-Now, fill in the required variables in both `.env` files:
+Edit each `.env` file with your configuration:
 
-*   `backend/.env`: Set your `MONGODB_URI`, `JWT_SECRET`, `PRIVATE_KEY`, and `AVALANCHE_RPC_URL`.
-*   `contracts/.env`: Set your `FUJI_RPC_URL` (or mainnet), `PRIVATE_KEY`, and `SNOWTRACE_API_KEY`.
+**Backend** (`backend/.env`):
+```env
+MONGODB_URI=mongodb://localhost:27017/etherpets
+JWT_SECRET=your_secure_random_string
+PRIVATE_KEY=your_wallet_private_key
+AVALANCHE_RPC_URL=https://api.avax-test.network/ext/bc/C/rpc
+PET_NFT_ADDRESS=          # Add after deployment
+GAME_LOGIC_ADDRESS=       # Add after deployment
+ITEM_CONTRACT_ADDRESS=    # Add after deployment
+```
 
-### 4. Deploy Smart Contracts
+**Contracts** (`contracts/.env`):
+```env
+FUJI_RPC_URL=https://api.avax-test.network/ext/bc/C/rpc
+PRIVATE_KEY=your_wallet_private_key
+SNOWTRACE_API_KEY=your_snowtrace_api_key
+```
 
-Deploy the Solidity contracts to the Avalanche Fuji Testnet.
+**Frontend** (`frontend/.env`):
+```env
+VITE_API_URL=http://localhost:5000/api
+VITE_AVALANCHE_FUJI_RPC_URL=https://api.avax-test.network/ext/bc/C/rpc
+VITE_PET_NFT_CONTRACT=    # Add after deployment
+VITE_WALLETCONNECT_PROJECT_ID=your_walletconnect_project_id
+```
+
+**4. Compile and Deploy Smart Contracts**
 
 ```bash
 cd contracts
+
+# Compile contracts
+npx hardhat compile
+
+# Deploy to Avalanche Fuji Testnet
 npx hardhat run scripts/deploy.js --network fuji
 ```
 
-After deployment, copy the contract addresses printed in the console and update your `backend/.env` file with the correct addresses for the Pet NFT, Item, and other contracts.
+**Important:** Copy the deployed contract addresses and update your `.env` files!
 
-### 5. Run the Application
+**5. Start the Application**
 
-You can run the frontend and backend servers concurrently from the root directory.
+Open three terminal windows:
 
 ```bash
-# From the root /etherpets directory
+# Terminal 1: Start Backend
+cd backend
 npm run dev
+
+# Terminal 2: Start Frontend
+cd frontend
+npm run dev
+
+# Terminal 3: Ensure MongoDB is running
+mongod
 ```
 
-This will start:
-*   The **Backend API** on `http://localhost:5000`
-*   The **Frontend App** on `http://localhost:3000`
+**6. Access the Application**
 
-You can now open `http://localhost:3000` in your browser to use the application.
+Open your browser and navigate to:
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:5000
+- Health Check: http://localhost:5000/health
 
-## 📂 Project Structure Deep Dive
+### First-Time Setup
 
-*   `frontend/`: Contains all the client-side code. It's responsible for rendering the game UI, managing wallet connections, and communicating with the backend API. See the frontend README for more details.
-*   `backend/`: The server-side logic. It handles user authentication, manages game state, processes pet actions, and interacts with the smart contracts. See the backend README for API endpoints and more.
-*   `contracts/`: The heart of the on-chain logic. It defines the structure of the NFTs, the rules of the marketplace, and the ownership of in-game assets.
+1. Connect your MetaMask wallet (Avalanche Fuji Testnet)
+2. Create your first SoulPet (mints an NFT)
+3. Complete daily rituals to nurture your pet
+4. Watch your pet evolve based on your care!
 
-## 🤝 Contributing
+## Documentation
 
-We welcome contributions! If you'd like to help improve EtherPets, please fork the repository and submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
+- [Backend API Documentation](./backend/README.md) - API endpoints and integration guide
+- [Frontend Guide](./frontend/README.md) - Component structure and development
+- [Smart Contracts](./contracts/) - Contract specifications and deployment
+- [Setup Guide](./SETUP_GUIDE.md) - Detailed step-by-step installation
 
-1.  Fork the Project
-2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4.  Push to the Branch (`git push origin feature/AmazingFeature`)
-5.  Open a Pull Request
+## How to Play
 
-## 📄 License
+### Daily Care Loop
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+1. Morning Check-In: Open the app and see your pet's current mood
+2. Choose Activities: Select from breathing exercises, puzzles, or reflection
+3. Earn Rewards: Complete rituals to earn in-game currency and items
+4. Social Interaction: Visit other players' gardens or send positive energy
+5. Track Progress: Monitor your mindfulness streak and pet's evolution
+
+### Pet Evolution Stages
+
+- Stage 1: Seed (Day 1-7) - Your pet begins as a glowing orb
+- Stage 2: Sprout (Day 8-21) - First evolution based on care patterns
+- Stage 3: Guardian (Day 22+) - Final form reflects your relationship
+
+### Hidden Mechanics
+
+Your pet has hidden emotional attributes:
+- Calm: Influenced by breathing exercises and meditation
+- Trust: Built through consistent daily visits
+- Empathy: Grows when you help other players
+- Curiosity: Increased by trying new activities
+
+These hidden states affect your pet's behavior and evolution path!
+
+## Development
+
+### Available Scripts
+
+**Backend:**
+```bash
+npm run dev          # Start development server
+npm start            # Production server
+npm test             # Run tests
+npm run lint         # Check code quality
+```
+
+**Frontend:**
+```bash
+npm run dev          # Start dev server (http://localhost:5173)
+npm run build        # Production build
+npm run preview      # Preview production build
+npm run lint         # ESLint check
+```
+
+**Contracts:**
+```bash
+npx hardhat compile  # Compile contracts
+npx hardhat test     # Run contract tests
+npx hardhat run scripts/deploy.js --network fuji  # Deploy
+```
+
+### Testing
+
+Run the complete test suite:
+
+```bash
+# Backend tests
+cd backend && npm test
+
+# Contract tests
+cd contracts && npx hardhat test
+
+# Frontend tests (if configured)
+cd frontend && npm test
+```
+
+## Security
+
+- Wallet-based authentication with JWT
+- Rate limiting on API endpoints
+- Input validation and sanitization
+- CORS protection
+- Helmet security headers
+- Smart contract audited for common vulnerabilities
+
+**Never share your private keys or seed phrases!**
+
+## Contributing
+
+We welcome contributions from the community! Here's how you can help:
+
+### Ways to Contribute
+
+- Report Bugs: Open an issue with details and reproduction steps
+- Suggest Features: Share your ideas for improvements
+- Improve Documentation: Help make our docs clearer
+- Submit Code: Fix bugs or implement new features
+
+### Contribution Process
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to your branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+### Development Guidelines
+
+- Follow existing code style and conventions
+- Write clear commit messages
+- Add tests for new features
+- Update documentation as needed
+- Ensure all tests pass before submitting PR
+
+## License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- OpenZeppelin - Smart contract libraries
+- Avalanche - High-performance blockchain platform
+- React Team - Frontend framework
+- Community Contributors - Thank you for your support!
+
+## Support & Community
+
+- Issues: [GitHub Issues](https://github.com/yourusername/etherpets/issues)
+- Discussions: [GitHub Discussions](https://github.com/yourusername/etherpets/discussions)
+- Twitter: [@EtherPets](https://twitter.com/etherpets)
+- Discord: [Join our community](https://discord.gg/etherpets)
+
+## Roadmap
+
+### Phase 1: MVP (Current)
+- Core pet mechanics
+- Basic NFT system
+- Daily rituals
+- Simple marketplace
+
+### Phase 2: Social Features (Q2 2025)
+- Community gardens
+- Multiplayer events
+- Achievement system
+- Leaderboards
+
+### Phase 3: Advanced Features (Q3 2025)
+- AR pet viewing
+- Voice commands
+- Cross-chain support
+- Mobile app
+
+### Phase 4: Ecosystem (Q4 2025)
+- Breeding system
+- Pet tournaments
+- DAO governance
+- Creator tools
 
 ---
 
-> This project was inspired by the idea of creating a game that heals instead of drains, blending the permanence of blockchain with the dynamic nature of emotional AI.
+<div align="center">
+
+**Built with ❤️ for mental wellness and blockchain innovation**
+
+*A game that heals instead of drains*
+
+[⬆ Back to Top](#-etherpets-mindful-blockchain-companions)
+
+</div>

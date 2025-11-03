@@ -1,167 +1,97 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+/**
+ * Game State Context
+ * Manages global game state such as energy, tokens, and notifications.
+ * This context provides a centralized way to track and update player resources
+ * and to display important messages throughout the application.
+ */
+import React, { createContext, useContext, useState } from 'react';
+import useLocalStorage from '../hooks/useLocalStorage';
 
-const GameStateContext = createContext()
+const GameStateContext = createContext();
 
+/**
+ * Custom hook to access the game state context.
+ * @returns {Object} The game state context value.
+ */
 export const useGameState = () => {
-  const context = useContext(GameStateContext)
+  const context = useContext(GameStateContext);
   if (!context) {
-    throw new Error('useGameState must be used within a GameStateProvider')
+    throw new Error('useGameState must be used within a GameStateProvider');
   }
-  return context
-}
+  return context;
+};
 
 export const GameStateProvider = ({ children }) => {
-  const [gameState, setGameState] = useState({
-    energy: 75,
-    tokens: 1250,
-    streak: 7,
-    lastPlayed: new Date().toISOString(),
-    gardenProgress: 11,
-    achievements: [
-      { id: 1, name: 'First Steps', earned: true },
-      { id: 2, name: 'Mindful Beginner', earned: true },
-      { id: 3, name: 'Garden Guardian', earned: true },
-      { id: 4, name: 'Energy Master', earned: false }
-    ],
-    dailyRituals: {
-      breathing: { completed: true, energy: 5 },
-      reflection: { completed: false, energy: 8 },
-      social: { completed: false, energy: 10 }
-    }
-  })
+  const [energy, setEnergy] = useLocalStorage('etherpets-energy', 100);
+  const [tokens, setTokens] = useLocalStorage('etherpets-tokens', 0);
+  const [notifications, setNotifications] = useLocalStorage('etherpets-notifications', []);
 
-  const [notifications, setNotifications] = useState([
-    { id: 1, type: 'energy', message: '+5 energy from morning meditation', read: false },
-    { id: 2, type: 'social', message: 'Luna sent you positive energy', read: false },
-    { id: 3, type: 'garden', message: 'New puzzle available in Harmony Garden', read: true }
-  ])
-
-  // Load game state from localStorage on mount
-  useEffect(() => {
-    const savedGameState = localStorage.getItem('etherpets-game-state')
-    if (savedGameState) {
-      setGameState(JSON.parse(savedGameState))
-    }
-
-    const savedNotifications = localStorage.getItem('etherpets-notifications')
-    if (savedNotifications) {
-      setNotifications(JSON.parse(savedNotifications))
-    }
-  }, [])
-
-  // Save game state to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('etherpets-game-state', JSON.stringify(gameState))
-  }, [gameState])
-
-  useEffect(() => {
-    localStorage.setItem('etherpets-notifications', JSON.stringify(notifications))
-  }, [notifications])
-
+  /**
+   * Adds a specified amount of energy.
+   * @param {number} amount - The amount of energy to add.
+   */
   const addEnergy = (amount) => {
-    setGameState(prev => ({
-      ...prev,
-      energy: Math.min(prev.energy + amount, 100)
-    }))
-  }
+    setEnergy(prev => Math.min(100, prev + amount));
+  };
 
+  /**
+   * Spends a specified amount of energy.
+   * @param {number} amount - The amount of energy to spend.
+   * @returns {boolean} - True if energy was spent, false otherwise.
+   */
   const spendEnergy = (amount) => {
-    setGameState(prev => ({
-      ...prev,
-      energy: Math.max(prev.energy - amount, 0)
-    }))
-  }
+    if (energy >= amount) {
+      setEnergy(prev => prev - amount);
+      return true;
+    }
+    return false;
+  };
 
+  /**
+   * Adds a specified amount of tokens.
+   * @param {number} amount - The amount of tokens to add.
+   */
   const addTokens = (amount) => {
-    setGameState(prev => ({
-      ...prev,
-      tokens: prev.tokens + amount
-    }))
-  }
+    setTokens(prev => prev + amount);
+  };
 
-  const spendTokens = (amount) => {
-    setGameState(prev => ({
-      ...prev,
-      tokens: Math.max(prev.tokens - amount, 0)
-    }))
-  }
-
-  const incrementStreak = () => {
-    setGameState(prev => ({
-      ...prev,
-      streak: prev.streak + 1,
-      lastPlayed: new Date().toISOString()
-    }))
-  }
-
-  const completeRitual = (ritualType) => {
-    setGameState(prev => ({
-      ...prev,
-      dailyRituals: {
-        ...prev.dailyRituals,
-        [ritualType]: { ...prev.dailyRituals[ritualType], completed: true }
-      }
-    }))
-
-    const energyReward = gameState.dailyRituals[ritualType]?.energy || 5
-    addEnergy(energyReward)
-    addTokens(energyReward * 2)
-  }
-
-  const updateGardenProgress = (progress) => {
-    setGameState(prev => ({
-      ...prev,
-      gardenProgress: Math.min(prev.gardenProgress + progress, 100)
-    }))
-  }
-
+  /**
+   * Adds a new notification to the list.
+   * @param {Object} notification - The notification object to add.
+   */
   const addNotification = (notification) => {
     const newNotification = {
       id: Date.now(),
+      ...notification,
       timestamp: new Date().toISOString(),
-      read: false,
-      ...notification
-    }
-    setNotifications(prev => [newNotification, ...prev])
-  }
+    };
+    setNotifications(prev => [newNotification, ...prev.slice(0, 19)]); // Keep max 20
+  };
 
-  const markNotificationAsRead = (notificationId) => {
+  /**
+   * Marks a notification as read.
+   * @param {number} id - The ID of the notification to mark as read.
+   */
+  const markNotificationAsRead = (id) => {
     setNotifications(prev =>
-      prev.map(notification =>
-        notification.id === notificationId
-          ? { ...notification, read: true }
-          : notification
-      )
-    )
-  }
-
-  const clearAllNotifications = () => {
-    setNotifications([])
-  }
-
-  const getUnreadNotificationsCount = () => {
-    return notifications.filter(notification => !notification.read).length
-  }
+      prev.map(n => (n.id === id ? { ...n, read: true } : n))
+    );
+  };
 
   const value = {
-    gameState,
-    notifications,
+    energy,
     addEnergy,
     spendEnergy,
+    tokens,
     addTokens,
-    spendTokens,
-    incrementStreak,
-    completeRitual,
-    updateGardenProgress,
+    notifications,
     addNotification,
     markNotificationAsRead,
-    clearAllNotifications,
-    getUnreadNotificationsCount
-  }
+  };
 
   return (
     <GameStateContext.Provider value={value}>
       {children}
     </GameStateContext.Provider>
-  )
-}
+  );
+};

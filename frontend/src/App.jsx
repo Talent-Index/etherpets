@@ -1,75 +1,62 @@
-import React, { useState } from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { useUser } from './context/UserContext'
-// Context providers
-import { UserProvider, useUser } from './context/UserContext'
-import { WalletProvider } from './context/WalletContext'
-import { GameStateProvider } from './context/GameStateContext'
-import { ThemeProvider } from './context/ThemeContext'
-import NotificationProvider from './context/NotificationContext'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { GameStateProvider } from './context/GameStateContext';
+import { UserProvider } from './context/UserContext';
+import { WalletProvider } from './context/WalletContext';
+import { ThemeProvider } from './context/ThemeContext';
+import { NotificationProvider } from './context/NotificationContext';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
-// Components
-import NavBar from './components/common/NavBar'
-import CreatePetModal from './components/pets/CreatePetModal'
-import ErrorBoundary from './components/common/ErrorBoundary'
-
-// Pages
-import Landing from './pages/Landing'
-import Dashboard from './pages/Dashboard'
-import Garden from './pages/Garden'
-import Reflection from './pages/Reflection'
-import Inventory from './pages/Inventory'
-import Profile from './pages/Profile'
-import Settings from './pages/Settings'
-import Tutorial from './pages/Tutorial'
-import NotFound from './pages/NotFound'
+import Dashboard from './pages/Dashboard';
+import Landing from './pages/Landing';
+import CreatePet from './pages/CreatePet';
+import Garden from './pages/Garden';
+import Profile from './pages/Profile';
+import Inventory from './pages/Inventory';
+import Reflection from './pages/Reflection';
+import Settings from './pages/Settings';
+import Tutorial from './pages/Tutorial';
+import NotFound from './pages/NotFound';
+import Header from './components/layout/Header';
+import Sidebar from './components/layout/Sidebar';
 
 function App() {
-  const [showCreatePet, setShowCreatePet] = useState(false)
-  const { user, createPet } = useUser()
-
   return (
-    <Router>
-      <NotificationProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
         <WalletProvider>
-          <GameStateProvider>
-            <UserProvider>
-              <ThemeProvider>
-                <ErrorBoundary>
-                  <div className="min-h-screen bg-primary text-white">
-                    <NavBar onCreatePet={() => setShowCreatePet(true)} />
-
-                    <main className="container mx-auto px-4 py-8">
-                      <Routes>
-                        <Route path="/" element={<Landing onCreatePet={() => setShowCreatePet(true)} />} />
-                        <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/garden" element={<Garden />} />
-                        <Route path="/reflect" element={<Reflection />} />
-                        <Route path="/inventory" element={<Inventory />} />
-                        <Route path="/profile" element={<Profile />} />
-                        <Route path="/settings" element={<Settings />} />
-                        <Route path="/tutorial" element={<Tutorial />} />
-                        <Route path="*" element={<NotFound />} />
-                      </Routes>
-                    </main>
-
-                    <CreatePetModal
-                      isOpen={showCreatePet}
-                      onClose={() => setShowCreatePet(false)}
-                      onCreate={(petData) => {
-                        createPet(petData)
-                        setShowCreatePet(false)
-                      }}
-                    />
+          <UserProvider>
+            <GameStateProvider>
+              <NotificationProvider>
+                <Router>
+                  <div className="min-h-screen bg-primary text-white flex">
+                    <Sidebar />
+                    <div className="flex-1 flex flex-col">
+                      <Header />
+                      <main className="flex-1 overflow-y-auto p-6">
+                        <Routes>
+                          <Route path="/" element={<Landing />} />
+                          <Route path="/dashboard" element={<Dashboard />} />
+                          <Route path="/create-pet" element={<CreatePet />} />
+                          <Route path="/garden" element={<Garden />} />
+                          <Route path="/profile" element={<Profile />} />
+                          <Route path="/inventory" element={<Inventory />} />
+                          <Route path="/reflection" element={<Reflection />} />
+                          <Route path="/settings" element={<Settings />} />
+                          <Route path="/tutorial" element={<Tutorial />} />
+                          <Route path="*" element={<NotFound />} />
+                        </Routes>
+                      </main>
+                    </div>
                   </div>
-                </ErrorBoundary>
-              </ThemeProvider>
-            </UserProvider>
-          </GameStateProvider>
+                </Router>
+              </NotificationProvider>
+            </GameStateProvider>
+          </UserProvider>
         </WalletProvider>
-      </NotificationProvider>
-    </Router>
-  )
+      </ThemeProvider>
+    </ErrorBoundary>
+  );
 }
 
-export default App
+export default App;

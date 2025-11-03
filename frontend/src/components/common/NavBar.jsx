@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useWallet } from '../context/WalletContext'
-import { useUser } from '../context/UserContext'
+import { useWallet } from '../../context/WalletContext'
+import { useUser } from '../../context/UserContext'
 import { 
   Home, 
   LayoutDashboard, 

@@ -1,141 +1,93 @@
-import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+/**
+ * Breathing Exercise Component
+ * A guided visual breathing exercise to promote calmness and mindfulness.
+ * It cycles through "Breathe In", "Hold", and "Breathe Out" phases.
+ */
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
-const BreathingExercise = ({ onComplete }) => {
-  const [isActive, setIsActive] = useState(false)
-  const [currentPhase, setCurrentPhase] = useState('inhale')
-  const [cycles, setCycles] = useState(0)
-  const [timeLeft, setTimeLeft] = useState(4)
+const BreathingExercise = ({ onComplete, duration = 60 }) => {
+  const [phase, setPhase] = useState('inhale'); // inhale, hold, exhale
+  const [timeLeft, setTimeLeft] = useState(duration);
+  const [cycleText, setCycleText] = useState('Get Ready...');
 
-  const phases = {
-    inhale: { duration: 4000, color: 'from-accent-teal to-accent-mint', label: 'Breathe In' },
-    hold: { duration: 4000, color: 'from-accent-cyan to-accent-teal', label: 'Hold' },
-    exhale: { duration: 4000, color: 'from-accent-lavender to-accent-cyan', label: 'Breathe Out' }
-  }
+  const cycle = {
+    inhale: { duration: 4, text: 'Breathe In...' },
+    hold: { duration: 4, text: 'Hold...' },
+    exhale: { duration: 6, text: 'Breathe Out...' },
+  };
 
   useEffect(() => {
-    let interval
-    if (isActive) {
-      interval = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            // Move to next phase
-            const phaseKeys = Object.keys(phases)
-            const currentIndex = phaseKeys.indexOf(currentPhase)
-            const nextIndex = (currentIndex + 1) % phaseKeys.length
-            const nextPhase = phaseKeys[nextIndex]
-            
-            setCurrentPhase(nextPhase)
-            
-            // Count cycle when returning to inhale
-            if (nextPhase === 'inhale') {
-              setCycles(prev => {
-                if (prev >= 4) { // Complete after 4 cycles
-                  setIsActive(false)
-                  onComplete?.()
-                  return 0
-                }
-                return prev + 1
-              })
-            }
-            
-            return phases[nextPhase].duration / 1000
-          }
-          return prev - 1
-        })
-      }, 1000)
-    }
+    const totalCycleTime = cycle.inhale.duration + cycle.hold.duration + cycle.exhale.duration;
+    let phaseTimer;
+    let currentPhase = 'inhale';
 
-    return () => clearInterval(interval)
-  }, [isActive, currentPhase, cycles])
+    const runCycle = () => {
+      setPhase(currentPhase);
+      setCycleText(cycle[currentPhase].text);
 
-  const startExercise = () => {
-    setIsActive(true)
-    setCycles(0)
-    setCurrentPhase('inhale')
-    setTimeLeft(phases.inhale.duration / 1000)
-  }
+      phaseTimer = setTimeout(() => {
+        if (currentPhase === 'inhale') currentPhase = 'hold';
+        else if (currentPhase === 'hold') currentPhase = 'exhale';
+        else currentPhase = 'inhale';
+        runCycle();
+      }, cycle[currentPhase].duration * 1000);
+    };
 
-  const currentPhaseConfig = phases[currentPhase]
+    const startTimeout = setTimeout(runCycle, 2000); // Initial delay
+
+    const mainTimer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(mainTimer);
+          clearTimeout(phaseTimer);
+          clearTimeout(startTimeout);
+          onComplete?.();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      clearInterval(mainTimer);
+      clearTimeout(phaseTimer);
+      clearTimeout(startTimeout);
+    };
+  }, [onComplete]);
 
   return (
-    <div className="text-center">
-      <AnimatePresence mode="wait">
-        {!isActive ? (
-          <motion.div
-            key="start"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="space-y-6"
-          >
-            <h3 className="text-2xl font-bold">Breathing Exercise</h3>
-            <p className="text-gray-400">
-              Follow the rhythm to calm your mind and energize your pet
-            </p>
-            <button
-              onClick={startExercise}
-              className="btn-primary"
-            >
-              Begin Breathing
-            </button>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="exercise"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="space-y-8"
-          >
-            {/* Breathing Circle */}
-            <div className="flex justify-center">
-              <motion.div
-                animate={{
-                  scale: currentPhase === 'inhale' ? 1.2 : 
-                         currentPhase === 'hold' ? 1.2 : 1,
-                  opacity: currentPhase === 'exhale' ? 0.8 : 1
-                }}
-                transition={{
-                  duration: currentPhaseConfig.duration / 1000,
-                  ease: currentPhase === 'inhale' ? 'easeOut' : 
-                        currentPhase === 'exhale' ? 'easeIn' : 'linear'
-                }}
-                className={`w-48 h-48 rounded-full bg-gradient-to-br ${currentPhaseConfig.color} flex items-center justify-center shadow-2xl`}
-              >
-                <div className="text-white text-center">
-                  <div className="text-2xl font-bold mb-2">{timeLeft}</div>
-                  <div className="text-lg">{currentPhaseConfig.label}</div>
-                </div>
-              </motion.div>
-            </div>
+    <div className="text-center flex flex-col items-center justify-center space-y-8">
+      <h2 className="text-2xl font-bold text-white">Mindful Breathing</h2>
 
-            {/* Progress */}
-            <div className="space-y-4">
-              <div className="flex justify-between text-sm text-gray-400">
-                <span>Cycle {cycles}/4</span>
-                <span>{currentPhaseConfig.label}</span>
-              </div>
-              <div className="w-full bg-gray-700 rounded-full h-2">
-                <motion.div
-                  initial={{ width: '100%' }}
-                  animate={{ width: '0%' }}
-                  transition={{ duration: timeLeft, ease: 'linear' }}
-                  className="h-2 bg-accent-mint rounded-full"
-                />
-              </div>
-            </div>
+      <div className="relative w-48 h-48 flex items-center justify-center">
+        <motion.div
+          className="absolute w-full h-full bg-blue-500/20 rounded-full"
+          animate={{
+            scale: phase === 'inhale' ? 1.2 : phase === 'exhale' ? 0.8 : 1.1,
+          }}
+          transition={{ duration: phase === 'inhale' ? 4 : phase === 'exhale' ? 6 : 4, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="w-48 h-48 bg-gradient-to-br from-accent-cyan to-accent-teal rounded-full flex items-center justify-center shadow-lg"
+          animate={{
+            scale: phase === 'inhale' ? 1 : phase === 'exhale' ? 0.7 : 0.9,
+          }}
+          transition={{ duration: phase === 'inhale' ? 4 : phase === 'exhale' ? 6 : 4, ease: 'easeInOut' }}
+        >
+          <span className="text-primary text-xl font-semibold">
+            {cycleText}
+          </span>
+        </motion.div>
+      </div>
 
-            <button
-              onClick={() => setIsActive(false)}
-              className="btn-secondary"
-            >
-              Stop Exercise
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <p className="text-gray-400">
+        Follow the rhythm. Time remaining: {timeLeft}s
+      </p>
+
+      <button onClick={onComplete} className="btn-secondary text-sm">End Session</button>
     </div>
-  )
-}
+  );
+};
 
-export default BreathingExercise
+export default BreathingExercise;

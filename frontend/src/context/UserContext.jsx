@@ -30,6 +30,34 @@ export const UserProvider = ({ children }) => {
   const { addEnergy, addTokens, addNotification } = useGameState()
 
   /**
+   * Fetches all pets for a given owner address from the backend.
+   * @param {string} ownerAddress - The wallet address of the owner.
+   */
+  const fetchPetsByOwner = async (ownerAddress) => {
+    if (!ownerAddress) return;
+    setIsLoading(true);
+    try {
+      const response = await apiClient.get(`/pets/owner/${ownerAddress}`);
+      const fetchedPets = response.data.data || [];
+      // Add 'id' field to match local usage if backend uses '_id'
+      const petsWithId = fetchedPets.map(p => ({ ...p, id: p._id }));
+      setPets(petsWithId);
+
+      // If there's no current pet, set the first one as active
+      if (!currentPet && petsWithId.length > 0) {
+        setCurrentPet(petsWithId[0]);
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        setPets([]); // User has no pets, which is not an error
+      } else {
+        console.error('Error fetching pets:', error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  /**
    * Create a new pet for the user
    * @param {Object} petData - The pet data to create
    * @returns {Promise<Object>} The created pet
@@ -196,6 +224,7 @@ export const UserProvider = ({ children }) => {
     updatePet,
     updatePetMood,
     performPetAction,
+    fetchPetsByOwner,
     levelUpPet,
     switchPet,
     isLoading

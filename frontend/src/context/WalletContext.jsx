@@ -1,91 +1,75 @@
 /**
- * Wallet Context for managing blockchain wallet connections
- * Handles MetaMask integration, account management, and network switching
+ * Wallet Context
+ * Manages wallet connection state using wagmi and ethers.
+ * This provides a simple interface for connecting/disconnecting a wallet and
+ * accessing the user's account information throughout the application.
  */
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
-import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi'
-import { injected } from 'wagmi/connectors'
-import { avalancheFuji } from 'wagmi/chains'
-import { useNotificationContext } from './NotificationContext'
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
+import { InjectedConnector } from 'wagmi/connectors/injected';
 
-// Create context for wallet data
-const WalletContext = createContext()
+const WalletContext = createContext();
 
 /**
- * Custom hook to access wallet context
- * @returns {Object} Wallet context value
+ * Custom hook to access the wallet context.
+ * @returns {Object} The wallet context value.
  */
 export const useWallet = () => {
-  const context = useContext(WalletContext)
+  const context = useContext(WalletContext);
   if (!context) {
-    throw new Error('useWallet must be used within a WalletProvider')
+    throw new Error('useWallet must be used within a WalletProvider');
   }
-  return context
-}
+  return context;
+};
 
 export const WalletProvider = ({ children }) => {
-  const [error, setError] = useState(null)
-  const { notifySuccess, notifyError } = useNotificationContext()
+  const { address, isConnected: isWagmiConnected } = useAccount();
+  const { connect, error: connectError, isLoading: isConnecting } = useConnect({
+    connector: new InjectedConnector(),
+  });
+  const { disconnect } = useDisconnect();
 
-  // Wagmi hooks for wallet state and actions
-  const { address, isConnected, isConnecting, chain } = useAccount()
-  const { connect, connectors } = useConnect()
-  const { disconnect } = useDisconnect()
-  const { switchChain } = useSwitchChain()
+  const [account, setAccount] = useState(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [error, setError] = useState(null);
 
-  /**
-   * Connect to the user's wallet (MetaMask)
-   */
-  const connectWallet = useCallback(async () => {
-    setError(null)
-    try {
-      // Find the injected connector (e.g., MetaMask)
-      const injectedConnector = connectors.find(c => c.id === 'injected')
-      connect({ connector: injectedConnector || connectors[0] }, {
-        onSuccess: (data) => {
-          notifySuccess(`Wallet connected: ${data.accounts[0].slice(0, 6)}...${data.accounts[0].slice(-4)}`)
-        },
-        onError: (err) => {
-          notifyError(err.message || 'Failed to connect wallet.')
-        }
-      })
-    } catch (err) {
-      notifyError(err.message || 'An unexpected error occurred.')
+  useEffect(() => {
+    if (isWagmiConnected && address) {
+      setAccount(address);
+      setIsConnected(true);
+    } else {
+      setAccount(null);
+      setIsConnected(false);
     }
-  }, [connect, connectors, notifySuccess, notifyError])
+  }, [address, isWagmiConnected]);
 
-  /**
-   * Disconnect the wallet
-   */
-  const disconnectWallet = useCallback(() => {
-    setError(null)
-    disconnect()
-  }, [disconnect])
-
-  /**
-   * Switch to Avalanche Fuji Testnet
-   */
-  const switchToAvalanche = useCallback(async () => {
-    if (switchChain) {
-      switchChain({ chainId: avalancheFuji.id })
+  useEffect(() => {
+    if (connectError) {
+      setError(connectError.message);
     }
-  }, [switchChain])
+  }, [connectError]);
 
-  // Context value containing all wallet-related state and functions
+  const connectWallet = () => {
+    setError(null);
+    connect();
+  };
+
+  const disconnectWallet = () => {
+    disconnect();
+  };
+
   const value = {
-    account: address,
+    account,
     isConnected,
     isConnecting,
     error,
-    network: chain,
     connectWallet,
     disconnectWallet,
-    switchToAvalanche
-  }
+  };
 
   return (
     <WalletContext.Provider value={value}>
       {children}
     </WalletContext.Provider>
-  )
-}
+  );
+};

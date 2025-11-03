@@ -15,14 +15,21 @@ import {
   User
 } from 'lucide-react'
 import { useUser } from '../context/UserContext'
-import { useTheme } from '../context/ThemeContext'
 import { useWallet } from '../context/WalletContext'
 
 const Settings = () => {
   const { user, currentPet } = useUser()
   const { account, disconnectWallet } = useWallet()
-  const { theme, setTheme } = useTheme()
   
+  // Mock theme context for demonstration
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+
+  const handleThemeChange = (newTheme) => {
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    // In a real app, you'd also update the class on the <html> element
+  };
+
   // Settings state
   const [settings, setSettings] = useState({
     sound: JSON.parse(localStorage.getItem('settings-sound') || 'true'),
@@ -109,13 +116,6 @@ const Settings = () => {
           icon: <Moon className="w-5 h-5" />,
           type: 'select'
         },
-        {
-          key: 'reduceMotion',
-          label: 'Reduce Motion',
-          description: 'Minimize animations for accessibility',
-          icon: <Moon className="w-5 h-5" />,
-          type: 'toggle'
-        }
       ]
     },
     {
@@ -161,7 +161,7 @@ const Settings = () => {
   ]
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto p-4 md:p-6 lg:p-8">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -195,86 +195,42 @@ const Settings = () => {
 
             {/* Settings List */}
             <div className="divide-y divide-white/5">
-              {section.settings.map((setting, index) => (
-                <div key={setting.key} className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4 flex-1">
-                      <div className="text-accent-teal">
-                        {setting.icon}
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-semibold">{setting.label}</div>
-                        <div className="text-sm text-gray-400 mt-1">
-                          {setting.description}
-                        </div>
-                      </div>
+              {section.settings.map((setting) => (
+                <div key={setting.key} className="p-6 flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="text-accent-teal">{setting.icon}</div>
+                    <div>
+                      <div className="font-semibold">{setting.label}</div>
+                      <div className="text-sm text-gray-400 mt-1">{setting.description}</div>
                     </div>
-
-                    {/* Toggle Setting */}
-                    {setting.type === 'toggle' && (
-                      <label htmlFor={setting.key} className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          id={setting.key}
-                          type="checkbox"
-                          checked={settings[setting.key]}
-                          onChange={(e) => handleSettingChange(setting.key, e.target.checked)}
-                          className="sr-only peer"
-                        />
-                        <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-teal"></div>
-                      </label>
-                    )}
-
-                    {/* Select Setting */}
-                    {setting.type === 'select' && setting.key === 'darkMode' && (
-                      <select
-                        value={theme}
-                        onChange={(e) => setTheme(e.target.value)}
-                        className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-accent-teal"
-                      >
-                        <option value="dark">Dark</option>
-                        <option value="light">Light</option>
-                        <option value="auto">Auto</option>
-                      </select>
-                    )}
-
-
-                    {/* Action Setting */}
-                    {setting.type === 'action' && (
-                      <button
-                        onClick={setting.action}
-                        className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 ${
-                          setting.destructive
-                            ? 'bg-red-500 hover:bg-red-600 text-white'
-                            : 'bg-accent-teal hover:bg-accent-mint text-primary'
-                        }`}
-                      >
-                        {setting.actionLabel}
-                      </button>
-                    )}
                   </div>
+                  
+                  {setting.type === 'toggle' && (
+                    <label htmlFor={setting.key} className="relative inline-flex items-center cursor-pointer">
+                      <input id={setting.key} type="checkbox" checked={settings[setting.key]} onChange={(e) => handleSettingChange(setting.key, e.target.checked)} className="sr-only peer" />
+                      <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-teal"></div>
+                    </label>
+                  )}
+
+                  {setting.type === 'select' && (
+                    <select value={theme} onChange={(e) => handleThemeChange(e.target.value)} className="form-input bg-white/10">
+                      <option value="dark">Dark</option>
+                      <option value="light">Light</option>
+                      <option value="auto">Auto</option>
+                    </select>
+                  )}
+
+                  {setting.type === 'action' && (
+                    <button onClick={setting.action} className={`btn ${setting.destructive ? 'btn-danger' : 'btn-secondary'}`}>
+                      {setting.actionLabel}
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
           </motion.div>
         ))}
       </div>
-
-      {/* App Information */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="glass-morphism p-6 rounded-xl text-center mt-8"
-      >
-        <div className="text-sm text-gray-400 space-y-2">
-          <div>EtherPets v1.0.0</div>
-          <div>Built with ❤️ for mental wellness and mindfulness</div>
-          <div className="text-xs mt-4">
-            Your data is stored locally in your browser. 
-            Export regularly to prevent data loss.
-          </div>
-        </div>
-      </motion.div>
     </div>
   )
 }
